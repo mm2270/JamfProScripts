@@ -164,6 +164,21 @@ Your Mac will automatically reboot in $minToRestart minutes. Begin to save any o
 --text "Updates installed successfully" --informative-text "$doneMSG" \
 --button1 "    OK    " --icon-file "$msgIcon" --posY top --width 450 --timeout 30 --timeout-format " "
 
+	##	Sub-function to (re)display the progressbar window. Developed to workaround the fact that
+	##	CD responds to Cmd+Q and will quit. The script continues the countdown. The sub-function
+	##	causes the progress bar to reappear. When the countdown is done we quit all CD windows
+	showProgress ()
+	{
+	
+	##	Display progress bar
+	"$cdPath" progressbar --title "" --text " Preparing to restart this Mac..." \
+	--width 500 --height 90 --icon-file "$restartIcon" --icon-height 48 --icon-width 48 < /tmp/hpipe &
+	
+	##	Send progress through the named pipe
+	exec 20<> /tmp/hpipe
+	
+	}
+
 ##	Close file descriptor 20 if in use, and remove any instance of /tmp/hpipe
 exec 20>&-
 rm -f /tmp/hpipe
@@ -172,13 +187,8 @@ rm -f /tmp/hpipe
 mkfifo /tmp/hpipe
 sleep 0.2
 
-##	Display progress bar
-echo "Displaying progress bar window."
-"$cdPath" progressbar --title "" --text " Preparing to restart this Mac..." \
---width 500 --height 90 --icon-file "$restartIcon" --icon-height 48 --icon-width 48 < /tmp/hpipe &
-	
-##	Send progress through the named pipe
-exec 20<> /tmp/hpipe
+## Run progress bar sub-function
+showProgress
 
 echo "100" >&20
 
@@ -195,6 +205,9 @@ while [[ "$secsLeft" -gt 0 ]]; do
 	secsLeft=$((stopTime-currTime))
 	minRem=$((secsLeft/60))
 	secRem=$((secsLeft%60))
+	if [[ $(ps axc | grep "cocoaDialog") == "" ]]; then
+		showProgress
+	fi
 	echo "$progLeft $minRem minutes, $secRem seconds until reboot. Please save any work now." >&20
 done
 
@@ -202,8 +215,13 @@ echo "Closing progress bar."
 exec 20>&-
 rm -f /tmp/hpipe
 
+## Close cocoaDialog. This block is necessary for when multiple runs of the sub-function were called in the script
+for process in $(ps axc | awk '/cocoaDialog/{print $1}'); do
+	/usr/bin/osascript -e 'tell application "cocoaDialog" to quit'
+done
+
 ##	Clean up by deleting the SWUList file in /tmp/
-rm /tmp/SWUList
+rm /tmp/SWULIST
 
 ##	Delay 1/2 second, then force reboot
 sleep 0.5
@@ -225,9 +243,25 @@ elif [[ "${restartReq}" == "no" ]] || [[ "${restartReq}" == "" ]]; then
 	installMSG="Updates are now installing. Please do not shut down your Mac or put it to sleep until the installs finish."
 fi
 
-##	Display button-less window above progress bar, push to background
-"$cdPath" msgbox --title "$orgName Software Update > Installation" --text "Installations in progress" \
---informative-text "${installMSG}" --icon-file "${msgIcon}" --width 450 --height 184 --posY top &
+	##	Sub-function to display both a button-less CD window and a progress bar
+	##	This sub routine gets called by the enclosing function. It can also be called by
+	##	the install process if it does not see 2 instances of CD running
+	showInstallProgress ()
+	{
+
+	##	Display button-less window above progress bar, push to background
+	"$cdPath" msgbox --title "$orgName Software Update > Installation" --text "Installations in progress" \
+	--informative-text "${installMSG}" --icon-file "${msgIcon}" --width 450 --height 184 --posY top &
+
+	##	Display progress bar
+	echo "Displaying progress bar window."
+	"$cdPath" progressbar --title "" --text " Preparing to install selected updates..." \
+	--posX "center" --posY 198 --width 450 --float --icon installer < /tmp/hpipe &
+
+	##	Send progress through the named pipe
+	exec 10<> /tmp/hpipe
+
+	}
 
 ##	Close file descriptor 10 if in use, and remove any instance of /tmp/hpipe
 exec 10>&-
@@ -237,13 +271,8 @@ rm -f /tmp/hpipe
 mkfifo /tmp/hpipe
 sleep 0.2
 
-##	Display progress bar
-echo "Displaying progress bar window."
-"$cdPath" progressbar --title "" --text " Preparing to install selected updates..." \
---posX "center" --posY 198 --width 450 --float --icon installer < /tmp/hpipe &
-	
-##	Send progress through the named pipe
-exec 10<> /tmp/hpipe
+## Run the install progress sub-function (shows button-less CD window and progressbar
+showInstallProgress
 
 if [[ "$showProgEachUpdate" == "yes" ]]; then
 	echo "Showing individual update progress."
@@ -255,7 +284,13 @@ if [[ "$showProgEachUpdate" == "yes" ]]; then
 	for index in "${selectedItems[@]}"; do
 		UpdateName="${progSelectedItems[$i]}"
 		echo "Now installing ${UpdateName}..."
-		/usr/sbin/softwareupdate --verbose -i $index 2>&1 | while read line; do
+		/usr/sbin/softwareupdate --verbose -i "${index}" 2>&1 | while read line; do
+			##	Re-run the sub-function to display the cocoaDialog window and progress
+			##	if we are not seeing 2 items for CD in the process list
+			if [[ $(ps axc | grep "cocoaDialog" | wc -l | sed 's/^ *//') != "2" ]]; then
+				killall cocoaDialog
+				showInstallProgress
+			fi
 			pct=$( echo "$line" | awk '/Progress:/{print $NF}' | cut -d% -f1 )
 			echo "$pct Installing ${pkgCnt} of ${pkgTotal}: ${UpdateName}..." >&10
 		done
@@ -266,6 +301,11 @@ else
 	## Show a generic progress bar that progresses through all installs at once from 0-100 %
 	echo "Parameter 5 was set to \"no\". Showing single progress bar for all updates"
 	softwareupdate --verbose -i "${SWUItems[@]}" 2>&1 | while read line; do
+		##	if we are not seeing 2 items for CD in the process list
+		if [[ $(ps axc | grep "cocoaDialog" | wc -l | sed 's/^ *//') != "2" ]]; then
+			killall cocoaDialog
+			showInstallProgress
+		fi
 		pct=$( echo "$line" | awk '/Progress:/{print $NF}' | cut -d% -f1 )
 		echo "$pct Installing ${#SWUItems[@]} updates..." >&10
 	done
@@ -275,9 +315,11 @@ echo "Closing progress bar."
 exec 10>&-
 rm -f /tmp/hpipe
 
-##	Close the first backgrounded message window
-echo "Closing cocoaDialog message window."
-ps axc | awk '/cocoaDialog/{ print $1 }' | xargs kill -9
+##	Close all instances of cocoaDialog
+echo "Closing all cocoaDialog windows."
+for process in $(ps axc | awk '/cocoaDialog/{print $1}'); do
+	/usr/bin/osascript -e 'tell application "cocoaDialog" to quit'
+done
 
 ##	If any installed updates required a reboot...
 if [[ "${restartReq}" == "yes" ]]; then
@@ -293,7 +335,7 @@ elif [[ "${restartReq}" == "no" ]]; then
 	
 	## Clean up by deleting the SWUList file in /tmp/ before exiting the script
 	echo "Cleaning up SWU list file."
-	rm /tmp/SWUList
+	rm /tmp/SWULIST
 	exit 0
 fi
 
@@ -321,8 +363,8 @@ if [[ "$installNoReboots" == "yes" ]]; then
 	installUpdates
 fi
 
-##	If installNoReboots flag was not set, generate array of 
-##	formatted checkbox indexes for parsing based on the selections from the user
+##	If installNoReboots flag was not set, generate array of formatted
+##	checkbox indexes for parsing based on the selections from the user
 i=0;
 for state in ${Checks[*]}; do
 	checkboxstates=$( echo "${i}-${state}" )
@@ -428,6 +470,7 @@ if [[ ! -z "${noReboots[@]}" ]]; then
 		installNoReboots="yes"
 		assessChecks
 	else
+		echo "User chose to Cancel. Exiting..."
 		exit 0
 	fi
 	
@@ -448,7 +491,9 @@ else
 		echo "User clicked the \"Install\" button"
 		assessChecks
 	else
-		echo "User chose to Cancel from the selection dialog. Exiting..."
+		echo "User chose to Cancel from the selection dialog."
+		echo "Cleaning up SWU list file. Exiting..."
+		rm /tmp/SWULIST
 		exit 0
 	fi
 fi
