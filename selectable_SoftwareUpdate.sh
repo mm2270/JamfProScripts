@@ -56,6 +56,7 @@ if [[ "$6" != "" ]]; then
 		minToRestart="$6"
 	else
 		echo "Non integer, or a decimal value was passed. Setting reboot time to default (5 minutes)"
+		minToRestart="5"
 	fi
 else
 	minToRestart="5"
