@@ -2,6 +2,7 @@
 
 ##	Script Name:		Selectable_SoftwareUpdate.sh
 ##	Script Author:		Mike Morales
+##	Last Update:		Mar-19-2014
 
 ## Path to cocoaDialog (customize to your own location)
 cdPath="/Library/Application Support/JAMF/bin/cocoaDialog.app/Contents/MacOS/cocoaDialog"
@@ -50,6 +51,7 @@ fi
 ##	PARAMETER 6: Set the number of minutes until reboot (only used if installations require it)
 ##	Default value of 5 minutes is assigned if no script parameter is passed
 ##	Special note: Only full integers can be used. No decimals.
+##	If the script detects a non whole integer, it will fall back on the default 5 minute setting.
 if [[ "$6" != "" ]]; then
 	## Run test to make sure we have a non floating point integer
 	if [[ $(expr "$6" / "$6") == "1" ]]; then
@@ -165,7 +167,7 @@ Your Mac will automatically reboot in $minToRestart minutes. Begin to save any o
 --text "Updates installed successfully" --informative-text "$doneMSG" \
 --button1 "    OK    " --icon-file "$msgIcon" --posY top --width 450 --timeout 30 --timeout-format " "
 
-	##	Sub-function to (re)display the progressbar window. Developed to workaround the fact that
+	##	Sub-function to (re)display the progressbar window. Developed to work around the fact that
 	##	CD responds to Cmd+Q and will quit. The script continues the countdown. The sub-function
 	##	causes the progress bar to reappear. When the countdown is done we quit all CD windows
 	showProgress ()
@@ -457,8 +459,13 @@ if [[ ! -z "${noReboots[@]}" ]]; then
 			echo "No selections made. Alerting user and returning to selection screen."
 			"$cdPath" msgbox --title "$orgName Software Update" --text "No selections were made" \
 			--informative-text "$(echo -e "You didn't select any updates to install.\n\nIf you want to cancel out of this application, click the \"Cancel\" button in the window instead, or press the Esc key.\n\nThe Software Update window will appear again momentarily.")" \
-			--button1 "    OK    " --timeout 10 --timeout-format " " --width 500 --icon caution
-			##	Restart this function after the alert message times out
+			--button1 "    OK    " --timeout 10 --timeout-format " " --width 500 --posY top --icon caution
+			##	Because we are restarting the function, first empty all previously built arrays
+			##	Credit to Cem Baykara (@Cem - JAMFNation) for discovering this issue during testing
+			SWUList=()
+			SWUProg=()
+			SWUItems=()
+			##	Now restart this function after the alert message times out
 			startDialog
 		else
 			##	"Install" button was clicked and items checked. Run the assess checkbox function
