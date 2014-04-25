@@ -1,11 +1,25 @@
 #!/bin/bash
 
 ##	Script Name:		Selectable_SoftwareUpdate.sh
-##	Script Author:		Mike Morales
-##	Last Update:		Mar-19-2014
+##	Script Author:		Mike Morales, @mm2270 on JAMFNation
+##	Last Update:		2014-03-26
 
-## Path to cocoaDialog (customize to your own location)
+##	Path to cocoaDialog (customize to your own location)
 cdPath="/Library/Application Support/JAMF/bin/cocoaDialog.app/Contents/MacOS/cocoaDialog"
+
+##	Quick sanity check to make sure cocoaDialog is installed in the path specified
+if [ ! -e "$cdPath" ]; then
+	echo "cocoaDialog was not found in the path specified. It may not be installed, or the path is wrong. Exiting..."
+	exit 1
+fi
+
+##	Set the installAllAtLogin flag here to 'yes' or leave it blank (equivalent to 'no')
+##	Function: When the script is run on a Mac that is at the login window, if the flag is set to 'yes',
+##	it will lock the login window to prevent unintended logins and proceed to install all available updates.
+##	Once completed, the login window will either be unlocked in the case of no restarts needed,
+##	or a restart will be done immediately to complete the installations.
+
+installAllAtLogin="yes"
 
 ##	Get minor version of OS X
 osVers=$( sw_vers -productVersion | cut -d. -f2 )
@@ -508,6 +522,120 @@ fi
 
 }
 
+##	Function to lock the login window and install all available updates
+startLockScreenAgent ()
+{
+
+##	Note on this function: To make the script usable outside of a Casper Suite environment,
+##	we are using the Apple Remote Management LockScreen.app, located inside the AppleVNCServer bundle.
+##	This bundle and corresponding app is installed by default in all recent versions of OS X
+
+##	Set a flag to yes if any updates in the list will require a reboot
+while read line; do
+	if [[ $(echo "$line" | grep "^◀") != "" ]]; then
+		rebootsPresent="yes"
+		break
+	fi
+done < <(echo "$readSWUs")
+
+## Define the name and path to the LaunchAgent plist
+PLIST="/Library/LaunchAgents/com.LockLoginScreen.plist"
+
+## Define the text for the xml plist file
+LAgentCore="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
+<dict>
+	<key>Label</key>
+	<string>com.LockLoginScreen</string>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>LimitLoadToSessionType</key>
+	<string>LoginWindow</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/System/Library/CoreServices/RemoteManagement/AppleVNCServer.bundle/Contents/Support/LockScreen.app/Contents/MacOS/LockScreen</string>
+		<string>-session</string>
+		<string>256</string>
+		<string>-msg</string>
+		<string>Updates are currently being installed on this Mac. It will automatically be restarted or returned to the login window when installations are complete.</string>
+	</array>
+</dict>
+</plist>"
+
+## Create the LaunchAgent file
+echo "Creating the LockLoginScreen LaunchAgent..."
+echo "$LAgentCore" > "$PLIST"
+
+## Set the owner, group and permissions on the LaunchAgent plist
+echo "Setting proper ownership and permissions on the LaunchAgent..."
+chown root:wheel "$PLIST"
+chmod 644 "$PLIST"
+
+## Use SIPS to copy and convert the SWU icon to use as the LockScreen icon
+
+## First, back up the original Lock.jpg image
+echo "Backing up Lock.jpg image..."
+mv /System/Library/CoreServices/RemoteManagement/AppleVNCServer.bundle/Contents/Support/LockScreen.app/Contents/Resources/Lock.jpg \
+/System/Library/CoreServices/RemoteManagement/AppleVNCServer.bundle/Contents/Support/LockScreen.app/Contents/Resources/Lock.jpg.bak
+
+## Now, copy and convert the SWU icns file into a new Lock.jpg file
+## Note: We are converting it to a png to preserve transparency, but saving it with the .jpg extension so LockScreen.app will recognize it.
+## Also resize the image to 400 x 400 pixels so its not so honkin' huge!
+echo "Creating SoftwareUpdate icon as png and converting to Lock.jpg..."
+sips -s format png "$swuIcon" --out /System/Library/CoreServices/RemoteManagement/AppleVNCServer.bundle/Contents/Support/LockScreen.app/Contents/Resources/Lock.jpg \
+--resampleWidth 400 --resampleHeight 400
+
+## Now, kill/restart the loginwindow process to load the LaunchAgent
+echo "Ready to lock screen. Restarting loginwindow process..."
+kill -9 $(ps axc | awk '/loginwindow/{print $1}')
+
+## Install all available Software Updates
+echo "Screen locked. Installing all available Software Updates..."
+/usr/sbin/softwareupdate --install --all
+
+if [ "$?" == "0" ]; then
+	## Delete LaunchAgent and reload the Login Window
+	echo "Deleting the LaunchAgent..."
+	rm "$PLIST"
+	sleep 1
+
+	if [[ "$rebootsPresent" == "yes" ]]; then
+		## Put the original Lock.jpg image back where it was, overwriting the SWU Icon image
+		echo "The rebootsPresent flag was set to 'yes' Replacing Lock.jpg image and immediately rebooting the Mac..."
+		mv /System/Library/CoreServices/RemoteManagement/AppleVNCServer.bundle/Contents/Support/LockScreen.app/Contents/Resources/Lock.jpg.bak \
+		/System/Library/CoreServices/RemoteManagement/AppleVNCServer.bundle/Contents/Support/LockScreen.app/Contents/Resources/Lock.jpg
+	
+		## Kill the LockScreen app and restart immediately
+		killall LockScreen
+		/sbin/shutdown -r now
+	else
+		## Put the original Lock.jpg image back where it was, overwriting the SWU Icon image
+		echo "The rebootsPresent flag was not set. Replacing Lock.jpg image and restoring the loginwindow..."
+		mv /System/Library/CoreServices/RemoteManagement/AppleVNCServer.bundle/Contents/Support/LockScreen.app/Contents/Resources/Lock.jpg.bak \
+		/System/Library/CoreServices/RemoteManagement/AppleVNCServer.bundle/Contents/Support/LockScreen.app/Contents/Resources/Lock.jpg
+
+		## Kill/restart the login window process to return to the login window
+		kill -9 $(ps axc | awk '/loginwindow/{print $1}')
+	fi
+
+else
+
+	echo "There was an error with the installations. Removing the Agent and unlocking the login window..."
+	
+	rm "$PLIST"
+	sleep 1
+	
+	mv /System/Library/CoreServices/RemoteManagement/AppleVNCServer.bundle/Contents/Support/LockScreen.app/Contents/Resources/Lock.jpg.bak \
+	/System/Library/CoreServices/RemoteManagement/AppleVNCServer.bundle/Contents/Support/LockScreen.app/Contents/Resources/Lock.jpg
+	
+	## Kill/restart the login window process to return to the login window
+	kill -9 $(ps axc | awk '/loginwindow/{print $1}')
+	exit 0
+fi
+
+}
+
 ##	The script starts here
 
 ##	Gather available Software Updates and export to a file
@@ -525,7 +653,15 @@ installSWUs=$( cat /tmp/SWULIST | grep -v 'recommended' | awk -F'\\* ' '/\*/{pri
 if [[ -z "$readSWUs" ]]; then
 	echo "No pending Software Updates found for this Mac. Exiting..."
 	exit 0
-else
-	echo "Software Updates are available. Moving to initial dialog..."
+elif [[ ! -z "$readSWUs" ]] && [[ "$loggedInUser" != "root" ]]; then
+	echo "Software Updates are available, and a user is logged in. Moving to initial dialog..."
 	startDialog
+elif [[ ! -z "$readSWUs" ]] && [[ "$loggedInUser" == "root" ]]; then
+	if [ "$installAllAtLogin" == "yes" ]; then
+		echo "SWUs are available, no-one logged in and the installAllAtLogin flag was set. Locking screen and installing all updates..."
+		startLockScreenAgent
+	else
+		echo "SWUs are available, no-one logged in but the installAllAtLogin flag was not set. Exiting..."
+		exit 0
+	fi
 fi
