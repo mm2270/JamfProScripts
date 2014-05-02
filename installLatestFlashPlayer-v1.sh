@@ -11,7 +11,7 @@
 ## https://github.com/rtrouton/rtrouton_scripts/blob/master/rtrouton_scripts/install_latest_adobe_flash_player/install_latest_adobe_flash_player.sh
 ##
 ## The XML URL for determining the current release Flash Player version was taken from the work
-## done by the AutoPkg team in their FlashPlayer recipe
+## done by the AutoPkg team in their FlashPlayer recipe.
 ##
 ## Description:
 ## This script will update FlashPlayer to the latest public release from Adobe by getting the
@@ -87,7 +87,7 @@ else
 	echo "Installation exited with an error code. Install failed..."
 	exit_status=1
 fi
-		
+
 ## Clean up (we do this regardless of the installation result so as not to leave downloads around in /tmp/)
 
 echo "Cleaning up. Force ejecting the 'Flash Player' volume..."
@@ -103,7 +103,7 @@ exit $exit_status
 
 ## Get the current version for flash from the Adobe website
 echo "Getting the current version of FlashPlayer from Adobe..."
-FP_releasedVers=$( curl -s http://fpdownload2.macromedia.com/get/flashplayer/update/current/xml/version_en_mac_pl.xml | xpath /XML/update[1] 2>&1 | awk -F'"' '{print $2}' | sed -e '/^$/d;s/,/./g' )
+FP_releasedVers=$( curl -s http://fpdownload.macromedia.com/get/flashplayer/update/current/xml/version_en_mac_pl.xml | xpath /XML/update[1] 2>&1 | awk -F'"' '{print $2}' | sed -e '/^$/d;s/,/./g' )
 
 echo "Current Flash Player version from Adobe's site is: ${FP_releasedVers}..."
 
@@ -142,7 +142,7 @@ echo "Determining any version difference..."
 		echo "Installed version, ${FP_installedVers} is higher than the public version, ${FP_releasedVers}. This Mac may be running a beta release. Exiting..."
 		exit 0
 	fi
-	
+
 	## If the version is "0", then Flash Player is not installed
 	if [[ "${FP_installedVers}" == "0" ]]; then
 		## Check to see what the installNew flag is set to
@@ -156,14 +156,14 @@ echo "Determining any version difference..."
 			exit 0
 		fi
 	fi
-	
-	
+
+
 	if [[ "${FP_installedNormalized}" -lt "${FP_releasedNormalized}" ]]; then
 		## Flash Player is installed, but is not up to date. Download and install
 		echo "Flash Player is not up to date. Downloading and installing..."
 		downloadFP
 	fi
-	
+
 	if [[ "${FP_installedVers}" == "${FP_releasedVers}" ]]; then
 		## Flash Player is installed, but matches the current release. Up to date, so exit
 		echo "Flash Player is installed and already up to date. Exiting..."
