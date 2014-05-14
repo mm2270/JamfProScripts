@@ -6,7 +6,7 @@ A collection of scripts I have worked on to be used with the Casper Suite, and i
 ###Current scripts
 ####**selectable-SoftwareUpdate.sh**<br>
 - Requires the current beta release of cocoaDialog to be installed on the target Mac.
-- Displays a checkbox dialog with availabel Software Updates to be installed.
+- Displays a checkbox dialog with available Software Updates to be installed.
 - Provides feedback on installations as they run with a moving progress bar.
 
 ####**installLatestFlashPlayer-v1.sh**<br>
