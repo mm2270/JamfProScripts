@@ -101,14 +101,14 @@ exit $exit_status
 }
 
 
-## Get the current version for flash from the Adobe website
+## Get the current version for Flash from the Adobe website
 echo "Getting the current version of FlashPlayer from Adobe..."
 FP_releasedVers=$( curl -s http://fpdownload.macromedia.com/get/flashplayer/update/current/xml/version_en_mac_pl.xml | xpath /XML/update[1] 2>&1 | awk -F'"' '{print $2}' | sed -e '/^$/d;s/,/./g' )
 
 echo "Current Flash Player version from Adobe's site is: ${FP_releasedVers}..."
 
 ## Extract the major version number from the long version string
-echo "Getting the majpr FlashPlayer version number..."
+echo "Getting the major FlashPlayer version number..."
 FP_majVers=$( echo "$FP_releasedVers" | cut -d. -f1 )
 
 ## Set the download URL
@@ -133,7 +133,7 @@ FP_releasedNormalized=$( printf "%s%02d\n" $(echo "$FP_releasedVers" | sed -e 's
 echo "Normalized installed version is: $FP_installedNormalized"
 echo "Normalized released version is: $FP_releasedNormalized"
 
-## Check to see if the version was set to "0" meaning not installed and also if we set the installNew flag and take appropriate next steps
+## Check the Flash Player version and take appropriate next steps
 echo "Determining any version difference..."
 
 	## Using the normalized version strings, check to see if the installed version is somehow higher than the current public release version.
