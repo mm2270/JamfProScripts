@@ -129,11 +129,9 @@ ARVersNomalized=$( echo "$ARVersFull" | sed 's/[.]//g' )
 echo "${ARCurrVersNormalized}"
 echo "${ARVersNomalized}"
 
-## Set the DMG name based on the available information
+## Set the DMG name based on the available information and the file name we will curl to
 AR_DMG="AdbeRdr${ARCurrVersNormalized}_en_US.dmg"
 AR_DMG_DL="AdobeReader.dmg"
-
-#echo "The DMG name will be:	$AR_DMG"
 
 ## Check to see if the version was set to "0" meaning not installed and also if we set the installNew flag and take appropriate next steps
 echo "Determining any version difference..."
