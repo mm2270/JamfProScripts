@@ -1,10 +1,8 @@
 #!/bin/bash
 
-## Script name:
-## installLatestFlashPlayer.sh
-##
-## Script author:
-## Mike M (@mm2270 on JAMFNation) email: mm2270 [at] me [dot] com
+## Script name:		installLatestFlashPlayer.sh
+## Script author:	Mike Morales (@mm2270 on JAMFNation) email: mm2270 [at] me [dot] com
+## Last Change:		2014-05-16
 ## 
 ## Acknowledgements:
 ## This script is based on the general concept developed by Rich Trouton in his script at:
