@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Script Name:		install_Latest_AdobeReader.sh
-## Author:			Mike Morales
+## Author:		Mike Morales
 ## Last Change:		2014-05-16
 ## Compatibility:	Intel OS X (10.6.x - 10.9.x)
 
