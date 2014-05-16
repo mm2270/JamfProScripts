@@ -13,3 +13,10 @@ A collection of scripts I have worked on to be used with the Casper Suite, and i
 - Has built in Flash Player plug-in version checking against Adobe's website to determine if a newer release can be installed.
 - Silently downloads the latest release (if needed) and installs the update, cleaning up the download at the end.
 - Will not downgrade a client running a beta release of Flash Player.
+- Assuming Adobe does not change around their site, should continue to work when FlashPlayer is revved to version 14.x, etc.
+
+####**install_Latest_AdobeReader.sh**   (_New_)<br>
+- Has built in Adobe Reader version checking against Adobe's website to determine if a newer release can be installed.
+- Silently downloads the latest release (if needed) and installs the update, cleaning up the download at the end.
+- Will not downgrade a client running a beta or newer release of Adobe Reader.
+- Assuming Adobe does not change around their site, should continue to work when Adobe Reader is revved to version 12.x, etc.
