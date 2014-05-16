@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Script Name:		install_Latest_AdobeReader.sh
-## Author:		Mike Morales
+## Author:			Mike Morales
 ## Last Change:		2014-05-16
 ## Compatibility:	Intel OS X (10.6.x - 10.9.x)
 
@@ -17,9 +17,13 @@ function downloadAR ()
 {
 
 # Download latest Adobe Reader DMG to a file in /tmp/
+echo "Download URL set to: http://ardownload.adobe.com/pub/adobe/reader/mac/${ARCurrMajVers}.x/${ARCurrVersFull}/en_US/${AR_DMG}"
 echo "Downloading Adobe Reader DMG..."
-curl -s -f "http://ardownload.adobe.com/pub/adobe/reader/mac/11.x/${ARCurrVersFull}/en_US/${AR_DMG}" -o "/tmp/${AR_DMG_DL}"
 
+## Download the DMG using curl and the URL set
+curl -s -f "http://ardownload.adobe.com/pub/adobe/reader/mac/${ARCurrMajVers}.x/${ARCurrVersFull}/en_US/${AR_DMG}" -o "/tmp/${AR_DMG_DL}"
+
+## Check the exit status of the curl command
 if [[ "$?" != "0" ]]; then
 	echo "Curl operation failed. Site may be blocked or unavailable right now. Exiting with code 1..."
 	exit 1
@@ -29,6 +33,7 @@ fi
 echo "Silently mounting Adobe Reader Installer disk image..."
 ARInstallVol=$( /usr/bin/hdiutil attach "/tmp/${AR_DMG_DL}" -nobrowse -noverify -noautoopen 2>&1 | awk -F'[\t]' '/\/Volumes/{ print $NF }' )
 
+## Check the exit status of the mount operation
 if [[ "$?" == "0" ]]; then
 	## Get the pkg name from the mounted volume
 	AR_PKG=$( ls "${ARInstallVol}" | grep ".pkg$" )
@@ -51,9 +56,10 @@ if [[ "$?" == "0" ]]; then
 	## Now check the installation results
 	if [[ "$installStatus" == "0" ]]; then
 		echo "Adobe Reader installation was successful. Checking new version for confirmation..."
-	
+
+		## Get the new version number from disk to ensure it matches the expected current version
 		AR_newVers=$( /usr/bin/defaults read "/Applications/Adobe Reader.app/Contents/Info" CFBundleShortVersionString )
-	
+
 		if [[ "${AR_newVers}" == "${ARCurrVersFull}" ]]; then
 			echo "Confirmed current version is now ${ARCurrVersFull}..."
 			exit_status=0
@@ -62,6 +68,7 @@ if [[ "$?" == "0" ]]; then
 			exit_status=1
 		fi
 	else
+		## If we didn't get a status 0 returned from the installation, exit with an error code
 		echo "Installation exited with an error code. Install failed..."
 		exit_status=1
 	fi
@@ -106,9 +113,13 @@ if [[ -z "${ARVersFull}" ]]; then
 	ARVersFull="0"
 fi
 
+## Get the first set of digits from the current version string
+ARCurrMajVers=$( echo "${ARCurrVersFull}" | cut -d. -f1 )
+echo "The Adobe Reader major version number is:		$ARCurrMajVers"
+
 ## Echo back what we pulled
-echo "The current released version from Adobe is: $ARCurrVersFull"
-echo "The current installed version on disk isL $ARVersFull"
+echo "The Adobe Reader current released version is: 		$ARCurrVersFull"
+echo "The Adobe Reader current installed version on disk is:	$ARVersFull"
 
 ## Normalize the version strings for use in integer comparison
 ARCurrVersNormalized=$( echo "$ARCurrVersFull" | sed 's/[.]//g' )
