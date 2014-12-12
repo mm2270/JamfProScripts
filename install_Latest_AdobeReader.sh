@@ -17,11 +17,11 @@ function downloadAR ()
 {
 
 # Download latest Adobe Reader DMG to a file in /tmp/
-echo "Download URL set to: http://ardownload.adobe.com/pub/adobe/reader/mac/${ARCurrMajVers}.x/${ARCurrVersFull}/en_US/${AR_DMG}"
+echo "Download URL set to: http://ardownload.adobe.com/pub/adobe/reader/mac/${ARCurrMajVers}.x/${ARCurrVersFull}/misc/${AR_DMG}"
 echo "Downloading Adobe Reader DMG..."
 
 ## Download the DMG using curl and the URL set
-curl -s -f "http://ardownload.adobe.com/pub/adobe/reader/mac/${ARCurrMajVers}.x/${ARCurrVersFull}/en_US/${AR_DMG}" -o "/tmp/${AR_DMG_DL}"
+curl -s -f "http://ardownload.adobe.com/pub/adobe/reader/mac/${ARCurrMajVers}.x/${ARCurrVersFull}/misc/${AR_DMG}" -o "/tmp/${AR_DMG_DL}"
 
 ## Check the exit status of the curl command
 if [[ "$?" != "0" ]]; then
@@ -130,7 +130,7 @@ echo "${ARCurrVersNormalized}"
 echo "${ARVersNomalized}"
 
 ## Set the DMG name based on the available information and the file name we will curl to
-AR_DMG="AdbeRdr${ARCurrVersNormalized}_en_US.dmg"
+AR_DMG="AdbeRdrUpd${ARCurrVersNormalized}.dmg"
 AR_DMG_DL="AdobeReader.dmg"
 
 ## Check to see if the version was set to "0" meaning not installed and also if we set the installNew flag and take appropriate next steps
