@@ -110,11 +110,9 @@ loggedInUser=$( ls -l /dev/console | awk '{print $3}' )
 if [ "$SelfService" ]; then
 	if [ ! -f "$cdPath" ]; then
 		echo "cocoaDialog was not found on this Mac and the SelfService flag was set. We can't continue..."
-		if [ "$SelfService" ]; then
-			"$jhPath" -windowType utility -title "IT" -heading "A problem occurred" -alignHeading center \
-			-description "A necessary component was not found on this Mac. Please allow up to 24 hours for the situation to correct itself and try again." \
-			-button1 "OK" -icon "/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/AlertCautionIcon.icns"
-		fi
+		"$jhPath" -windowType utility -title "IT" -heading "A problem occurred" -alignHeading center \
+		-description "A necessary component was not found on this Mac. Please allow up to 24 hours for the situation to correct itself and try again." \
+		-button1 "OK" -icon "/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/AlertCautionIcon.icns"
 		exit 1
 	fi
 fi
@@ -268,18 +266,6 @@ case "$firstChar" in
 	*)
 	art="A" ;;
 esac
-
-
-function emailOnInstallError ()
-{
-
-macName=$(scutil --get ComputerName)
-
-echo "$art ${properName} ${currVers} update failed to install on ${macName}. Please check the script for errors" | mail -s "$art ${properName} ${currVers} update failed to install" morales2270@gmail.com
-
-exit $exitstatus
-
-}
 
 
 function cleanUpAction_Success ()
