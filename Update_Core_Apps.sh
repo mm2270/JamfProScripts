@@ -73,6 +73,8 @@ The script can also be run in a Self Service mode by passing any value to parame
 Self Service mode will show dialogs and progress bars to the current user as it downloads and installs the current version of the application or Plug-In.${normal}
 " | fold -s -w 100
 
+tabs -8
+
 }
 
 
