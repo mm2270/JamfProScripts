@@ -13,7 +13,6 @@
 
 ## Path to cocoaDialog and jamfHelper (Edit path to cocoaDialog to match your environment)
 cdPath="/Library/Application Support/JAMF/bin/cocoaDialog.app/Contents/MacOS/cocoaDialog"
-#cdPath="//Applications/Utilities/cocoaDialog.app/Contents/MacOS/cocoaDialog"
 jhPath="/Library/Application Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper"
 
 ## The following variable can be hardcoded into the script to set whether new installs should take place
