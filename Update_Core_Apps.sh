@@ -13,6 +13,7 @@
 
 ## Path to cocoaDialog and jamfHelper (Edit path to cocoaDialog to match your environment)
 cdPath="/Library/Application Support/JAMF/bin/cocoaDialog.app/Contents/MacOS/cocoaDialog"
+#cdPath="//Applications/Utilities/cocoaDialog.app/Contents/MacOS/cocoaDialog"
 jhPath="/Library/Application Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper"
 
 ## The following variable can be hardcoded into the script to set whether new installs should take place
@@ -96,11 +97,9 @@ fi
 
 if [ "$5" != "" ]; then
 	SelfService="Yes"
-	echo "
-[Mode]: Self Service"
+	echo -e "\n[Mode]: Self Service"
 else
-	echo "
-[Mode]: Silent"
+	echo -e "\n[Mode]: Silent"
 fi
 
 ## Get the logged in user's name
@@ -412,9 +411,7 @@ if [ "$SelfService" ]; then
 fi
 
 ## Uncomment the below line to have the script exit without sending out an error email
-#exit $exit_status
-
-emailOnInstallError
+exit $exit_status
 
 }
 
