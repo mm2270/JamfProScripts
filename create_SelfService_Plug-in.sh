@@ -2,7 +2,9 @@
 
 ##	Script:		create_SelfService_Plug-in.sh
 ##	Author:		Mike Morales
-##	Last Change:	2015-01-11
+##	Last Change:	2015-01-12
+##		Notes for last change:
+##		Uses sips to check image aspect ratio and pre-convert image (to tmp file) to 128x128 pixels to use for base64 encoding
 
 
 function createPlugIn ()
@@ -57,10 +59,19 @@ fi
 
 ## If an image was chosen, convert it to binary data
 if [ ! -z "$ICON" ]; then
+	## Resize to 128 x 128 max height and width if the image is larger in either dimension
+
+	if [[ "$imageH" || "$imageW" -gt 128 ]]; then
+		sips -z 128 128 2>&1 >/dev/null "$ICON" -o "/private/tmp/$ICON_NAME" 2>&1 >/dev/null
+		IMAGE_PATH="/private/tmp/$ICON_NAME"
+	else
+		IMAGE_PATH="$ICON"
+	fi
+	
 	echo "Converting image file to binary data..."
 	sleep 0.5
 
-	imageData=$(cat "$ICON" | base64)
+	imageData=$(cat "$IMAGE_PATH" | base64)
 fi
 
 id="$nextID"
@@ -101,9 +112,14 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 if [ "$?" == "0" ]; then
 	if [ "$pluginFolderExists" == "yes" ]; then
 		echo -e "The Plug-in has been saved to the location: ${destDir}/${id}.plist. Self Service should now show the Plug-in\n"
+		
+		## Clean up the tmp image file
+		rm "/private/tmp/$ICON_NAME" 2>/dev/null
 		exit 0
 	else
 		echo -e "The Plug-in has been saved to the location: ${destDir}/${id}.plist. If necessary, you can package this plug-in plist and deploy it to other Macs.\n"
+		## Clean up the tmp image file
+		rm "/private/tmp/$ICON_NAME" 2>/dev/null
 		exit 0
 	fi
 else
@@ -111,6 +127,8 @@ else
 However, its possible the Plug-in was successfully saved. If its not showing up in Self Service,
 try running this script again to create it."
 
+	## Clean up the tmp image file
+	rm "/private/tmp/$ICON_NAME" 2>/dev/null
 	exit 1
 fi
 }
@@ -155,7 +173,7 @@ elif [[ "$PROCESS" == "REDO" || "redo" ]]; then
 	echo -e "Starting over...\n"
 	sleep 0.5
 	
-	initialUsage
+	askForURL
 fi
 
 }
@@ -211,25 +229,26 @@ if [ -z "$ICON" ]; then
 	echo -e "Icon selected: None. This Self Service Plug-in will be created without an icon. Continuing...\n"
 	askBrowserPref
 else
-	## Test to make sure we see a GIF, PNG, TIF or JPEG/JPG extension
-	extension="${ICON##*.}"
-	ICON_NAME=$(basename $ICON)
+	## Test to make sure we have a GIF, PNG, TIFF or JPEG file for the image
+	imageFormat=$(sips -g format "$ICON" | awk '/format/{print $NF}')
+
+	## Get the name of just the image file
+	ICON_NAME=$(basename "$ICON")
 	
-	## Set up case insensitive matching
-	shopt -s nocasematch
-	
-	case "$extension" in
-	png|tif|gif|jpg|jpeg)
+	case "$imageFormat" in
+	png|tiff|gif|jpeg)
+		imageH=$(sips -g pixelHeight "$ICON" | awk '{getline; print $NF}')
+		imageW=$(sips -g pixelWidth "$ICON" | awk '{getline; print $NF}')
+		
+		if [[ "$imageH" -ne "$imageW" ]]; then
+			echo "*** NOTE: This image is not in a square aspect ratio. The image may become distorted when converted ***"
+		fi 
 		echo -e "Icon selected: $ICON_NAME. Continuing...\n"
 		
-		## Disable case insensitivity
-		shopt -u nocasematch
 		askBrowserPref ;;
 	*)
-		iconText="We couldn't detect if the image ${ICON_NAME} is in one of the accepted formats. Please use only a png, gif, tif or jpeg/jpg and try again:"
+		iconText="The image ${ICON_NAME} appears to be in $imageFormat format. This is not one of the accepted formats. Please use only a png, gif, tif or jpeg and try again:"
 		
-		## Disable case insensitivity
-		shopt -u nocasematch
 		askForIcon ;;
 	esac
 	
