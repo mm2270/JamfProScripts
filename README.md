@@ -38,6 +38,26 @@ Details on the script are as follows:
 `/path/to/script/Update_Core_Apps.sh`  
 <br>
 <br>
+####**create_SelfService_Plug-in.sh**<br>
+This script can be used to create Casper Suite Self Service Plug-ins on the fly, without needing to create them first within the JSS, then pulling them down with the management framework. Useful for quick testing when creating new Plug-ins, before actually setting them up within the JSS. Also useful for environments that wish to 'scope' URL Plug-ins and not auto deploy all new Plug-ins to all managed Macs.
+
+Details on the script:  
+
+1. The script must be run as root (sudo)
+2. The script is interactive. It will 'guide' you on what you need to enter each step of the way.
+3. The script clearly indicates what items are **Required** versus those that are **Optional**.
+4. The script can accept images to use for the icon and convert them into the correct binary format
+5. The script will create SS URL plug-ins with unique IDs that start in the 1000+ range. This is done so (hopefully) none of the ones you create with the script will conflict with any you created in your JSS.  
+  *Note: the JSS will start with ID 1 and increment up, even if you delete any plug-ins later (IDs don't get reused).*
+6. The script will create the necessary folder hierarchy on a Casper managed Mac, and save it to the appropriate location, making it immediately available in Self Service.app.
+ * If used on a non managed Mac, it will save the resulting plug-in plist to your Desktop
+7. The script notes the resulting Plug-in's ID (same as file name) and save path, so it should be easy to locate and wrap into a package later for deployment.  
+
+#####Basic usage
+`sudo /path/to/create_SelfService_Plug-in.sh`  
+Enter your administrator password, and follow the on screen instructions
+<br>
+<br>
 ####**selectable-SoftwareUpdate.sh**<br>
 - Requires the current beta release of cocoaDialog to be installed on the target Mac.
 - Displays a checkbox dialog with available Software Updates to be installed.
