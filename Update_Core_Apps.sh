@@ -230,7 +230,7 @@ case "$appName" in
 		iconFile="/System/Library/CoreServices/DiskImageMounter.app/Contents/Resources/diskcopy-doc.icns" ;;
 	Reader|"Adobe Reader"|AdobeReader)
 		properName="Adobe Reader"					## Edit this to change the name that appears in dialogs
-		installerString="reader"
+		installerString="adbe"
 		type="application"
 		installType="PKG"
 		URL="${adbeRdrCheckURL}"
