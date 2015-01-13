@@ -2,7 +2,10 @@
 
 ## Script name:		Update_Core_Apps.sh
 ## Script author:	Mike Morales
-## Last updated:	2015-01-04
+## Last updated:	2015-01-13
+
+## Last rev notes:
+## Updated to account for changes to Oracle's Java check functions. Should now work correctly with OS X 10.10.x
 ##
 ## NOTES:
 ## This script will only work with Intel Macs.
@@ -13,6 +16,7 @@
 
 ## Path to cocoaDialog and jamfHelper (Edit path to cocoaDialog to match your environment)
 cdPath="/Library/Application Support/JAMF/bin/cocoaDialog.app/Contents/MacOS/cocoaDialog"
+#cdPath="//Applications/Utilities/cocoaDialog.app/Contents/MacOS/cocoaDialog"
 jhPath="/Library/Application Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper"
 
 ## The following variable can be hardcoded into the script to set whether new installs should take place
@@ -121,7 +125,7 @@ if [ ! -d "/Library/Application Support/ITUpdater/Downloads/" ]; then
 fi
 
 ## List of base check URLs
-javaCheckURL="http://java.com/en/download/mac_download.jsp"
+javaCheckURL="http://java.com/en/download/"
 flashCheckURL="http://fpdownload2.macromedia.com/get/flashplayer/update/current/xml/version_en_mac_pl.xml"
 firefoxCheckURL="http://download-origin.cdn.mozilla.net/pub/mozilla.org/firefox/releases/latest/mac/en-US/"
 firefoxESRCheckURL="http://download-origin.cdn.mozilla.net/pub/mozilla.org/firefox/releases/latest-esr/mac/en-US/"
@@ -1558,15 +1562,8 @@ function getJavaVersion ()
 
 ## Description: This function is called to get Oracle Java version and download URL
 
-## If the Mac is running 10.10, we need to use a different check url for Java
-if [[ $(sw_vers -productVersion | cut -d. -f2) == "10" ]]; then
-	URL="http://java.com/en/download/index.jsp"
-	echo "[Stage ${StepNum}]: Determining current version of ${properName}..."
-	currVersBase=$( curl -sfA "${UAGENT}" "${URL}" 2>/dev/null | awk -F'[>|<]' '/Version/{print}' | sed 's/Version //;s/ Update /./' )
-else
-	echo "[Stage ${StepNum}]: Determining current version of ${properName}..."
-	currVersBase=$( curl -sfA "${UAGENT}" "${URL}" 2>/dev/null | awk -F'[>|<]' '/Recommended Version/{print substr ($3,21,12)}' | sed -e 's/ Update /./;s/[ ]//' )
-fi
+echo "[Stage ${StepNum}]: Determining current version of ${properName}..."
+currVersBase=$( curl -sfA "${UAGENT}" "${URL}" 2>/dev/null | awk -F'[>|<]' '/Version/{print}' | sed 's/Version //;s/ Update /./' )
 
 if [[ ! -z "${currVersBase}" ]]; then
 
