@@ -6,7 +6,7 @@ A collection of scripts I have worked on to be used with the Casper Suite, and i
 ###Current scripts
 [Update_Core_Apps.sh](#update_core_appssh)  
 [create_SelfService_Plug-in.sh](#create_selfservice_plug-insh)  
-[install_select_SS_plug-ins.sh](#install_select_SS_plug-inssh) *(Companion script for create_SelfService_Plug-in.sh)*  
+[install_select_SS_plug-ins.sh](#install_select_ss_plug-inssh) *(Companion script for create_SelfService_Plug-in.sh)*  
 [selectable-SoftwareUpdate.sh](#selectable-softwareupdatesh)
 ####**Update_Core_Apps.sh**<br>
 The Update_Core_Apps script can be used to update many common free applications and Plug-ins. Despite the word "Update" in its name, it can also be used to install most of these applications and Plug-ins new on a target Mac.
