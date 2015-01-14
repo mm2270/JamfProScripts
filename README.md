@@ -7,6 +7,7 @@ A collection of scripts I have worked on to be used with the Casper Suite, and i
 [Update_Core_Apps.sh](#update_core_appssh)  
 [create_SelfService_Plug-in.sh](#create_selfservice_plug-insh)  
 [install_select_SS_plug-ins.sh](#install_select_ss_plug-inssh) *(Companion script for create_SelfService_Plug-in.sh)*  
+[install_Latest_GoogleChrome-SelfService.sh](#install_latest_googlechrome-selfservicesh)  
 [selectable-SoftwareUpdate.sh](#selectable-softwareupdatesh)
 ####**Update_Core_Apps.sh**<br>
 The Update_Core_Apps script can be used to update many common free applications and Plug-ins. Despite the word "Update" in its name, it can also be used to install most of these applications and Plug-ins new on a target Mac.
@@ -81,6 +82,18 @@ The choices made by the user are captured and only the selected URL plug-ins are
 <br>
 
 
+####**install_Latest_GoogleChrome-SelfService.sh**<br>
+This script is intended to be used within Self Service. The script will operate in one of three ways, dynamically determined based on conditions.  
+- If the Google Chrome browser is already installed on the Mac in the standard `/Applications/` path, it will attempt to locate the Google Software Update mechanism and run it as the user to check for, and install, any updates to Chrome. A final dialog will display if the browser was updated, or if it was already up to date.  
+- If it cannot locate the Google Software Update tools on the Mac, it will offer to download the latest release and install it.  
+- If Google Chrome is not installed or not located in `/Applications/`, it will offer to download the latest release and install it.  
+
+Progress is shown when appropriate. In all cases, the final success dialogs will display the installed or updated version of Google Chrome to the user running the policy.  
+
+Requirements:
+- Current beta release of cocoaDialog to be installed on the target Mac  
+
+<br>  
 ####**selectable-SoftwareUpdate.sh**<br>
 - Requires the current beta release of cocoaDialog to be installed on the target Mac.
 - Displays a checkbox dialog with available Software Updates to be installed.
