@@ -63,11 +63,11 @@ Enter your administrator password, and follow the on screen instructions
 <br>
 <br>
 ####**install_select_SS_plug-ins.sh**<br>
-This script is a companion script to create_SelfService_Plug-in.sh, and is intended to be used from a Casper Suite Self Service policy to allow end users to select the URL plug-ins they wish to install.  
+This script is a companion script to [create_SelfService_Plug-in.sh](#create_selfservice_plug-insh), and is intended to be used from a Casper Suite Self Service policy to allow end users to select the URL plug-ins they wish to install.  
 
 To effectively use this script, the following workflow is recommended:  
 
-1. Create any Self Service URL Plug-ins you wish to offer for installation. You can use any method you want for this, but it is recommended to use the [create_SelfService_Plug-in.sh](#create_SelfService_Plug-insh) script to make them.  
+1. Create any Self Service URL Plug-ins you wish to offer for installation. You can use any method you want for this, but it is recommended to use the [create_SelfService_Plug-in.sh](#create_selfservice_plug-insh) script to make them.  
 2. Create a new directory in `/private/tmp/` called **plug-ins_for_install**  
 3. Copy the URL Plug-ins you created in Step 1 from `/Library/Application\ Support/JAMF/Self\ Service/Plug-ins/` to the folder you created in `/private/tmp/`   
 4. Using Composer.app, or the packaging tool of your choice, create a deployable package (.pkg or .dmg) of the **plug-ins_for_install** directory and the plists inside it.  
