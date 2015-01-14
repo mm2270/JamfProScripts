@@ -6,6 +6,7 @@ A collection of scripts I have worked on to be used with the Casper Suite, and i
 ###Current scripts
 [Update_Core_Apps.sh](#update_core_appssh)  
 [create_SelfService_Plug-in.sh](#create_selfservice_plug-insh)  
+[install_select_SS_plug-ins.sh](#install_select_SS_plug-inssh) *(Companion script for create_SelfService_Plug-in.sh)*  
 [selectable-SoftwareUpdate.sh](#selectable-softwareupdatesh)
 ####**Update_Core_Apps.sh**<br>
 The Update_Core_Apps script can be used to update many common free applications and Plug-ins. Despite the word "Update" in its name, it can also be used to install most of these applications and Plug-ins new on a target Mac.
@@ -61,6 +62,25 @@ Details on the script:
 Enter your administrator password, and follow the on screen instructions
 <br>
 <br>
+####**install_select_SS_plug-ins.sh**<br>
+This script is a companion script to create_SelfService_Plug-in.sh, and is intended to be used from a Casper Suite Self Service policy to allow end users to select the URL plug-ins they wish to install.  
+
+To effectively use this script, the following workflow is recommended:  
+
+1. Create any Self Service URL Plug-ins you wish to offer for installation. You can use any method you want for this, but it is recommended to use the [create_SelfService_Plug-in.sh](#create_SelfService_Plug-insh) script to make them.  
+2. Create a new directory in `/private/tmp/` called **plug-ins_for_install**  
+3. Copy the URL Plug-ins you created in Step 1 from `/Library/Application\ Support/JAMF/Self\ Service/Plug-ins/` to the folder you created in `/private/tmp/`   
+4. Using Composer.app, or the packaging tool of your choice, create a deployable package (.pkg or .dmg) of the **plug-ins_for_install** directory and the plists inside it.  
+5. Upload the package to your Casper repository as you would any new package.  
+6. Create a new script in your Casper Suite JSS using the **install_select_SS_plug-ins.sh** as the code source.  
+7. Create a Self Service policy with the package created in Step 4 and the script created in Step 6. Set the script to run as "After".  
+<br>
+When the policy is run, the package is downloaded and installed. The installed creates the directory with the URL Plug-ins in `/private/tmp/`  
+The script runs next and reads the information from each plug-in plist and generates the appropriate dialog for the user running the policy.  
+The choices made by the user are captired and only the selected URL plug-ins are copied to `/Library/Application\ Support/JAMF/Self\ Service/Plug-ins/`. They become available immediately in Self Service.  
+<br>
+
+
 ####**selectable-SoftwareUpdate.sh**<br>
 - Requires the current beta release of cocoaDialog to be installed on the target Mac.
 - Displays a checkbox dialog with available Software Updates to be installed.
