@@ -75,9 +75,9 @@ To effectively use this script, the following workflow is recommended:
 6. Create a new script in your Casper Suite JSS using the **install_select_SS_plug-ins.sh** as the code source.  
 7. Create a Self Service policy with the package created in Step 4 and the script created in Step 6. Set the script to run as "After".  
 <br>
-When the policy is run, the package is downloaded and installed. The installed creates the directory with the URL Plug-ins in `/private/tmp/`  
+When the policy is run, the package is downloaded and installed. The installation creates the directory with the URL Plug-ins in `/private/tmp/`  
 The script runs next and reads the information from each plug-in plist and generates the appropriate dialog for the user running the policy.  
-The choices made by the user are captired and only the selected URL plug-ins are copied to `/Library/Application\ Support/JAMF/Self\ Service/Plug-ins/`. They become available immediately in Self Service.  
+The choices made by the user are captured and only the selected URL plug-ins are copied to `/Library/Application\ Support/JAMF/Self\ Service/Plug-ins/`. They become available immediately in Self Service.  
 <br>
 
 
