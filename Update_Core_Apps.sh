@@ -2,10 +2,10 @@
 
 ## Script name:		Update_Core_Apps.sh
 ## Script author:	Mike Morales
-## Last updated:	2015-01-13
+## Last updated:	2015-01-15
 
 ## Last rev notes:
-## Updated to account for changes to Oracle's Java check functions. Should now work correctly with OS X 10.10.x
+## Updated to correct issues with the free Flip Player version checking and download URL
 ##
 ## NOTES:
 ## This script will only work with Intel Macs.
@@ -16,7 +16,6 @@
 
 ## Path to cocoaDialog and jamfHelper (Edit path to cocoaDialog to match your environment)
 cdPath="/Library/Application Support/JAMF/bin/cocoaDialog.app/Contents/MacOS/cocoaDialog"
-#cdPath="//Applications/Utilities/cocoaDialog.app/Contents/MacOS/cocoaDialog"
 jhPath="/Library/Application Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper"
 
 ## The following variable can be hardcoded into the script to set whether new installs should take place
@@ -129,7 +128,8 @@ javaCheckURL="http://java.com/en/download/"
 flashCheckURL="http://fpdownload2.macromedia.com/get/flashplayer/update/current/xml/version_en_mac_pl.xml"
 firefoxCheckURL="http://download-origin.cdn.mozilla.net/pub/mozilla.org/firefox/releases/latest/mac/en-US/"
 firefoxESRCheckURL="http://download-origin.cdn.mozilla.net/pub/mozilla.org/firefox/releases/latest-esr/mac/en-US/"
-flipPlayerCheckURL="http://www.telestream.net/flip-player/download.htm?keepThis=true&TB_iframe=true&height=420&width=520"
+##	flipPlayerCheckURL="http://www.telestream.net/flip-player/download.htm?keepThis=true&TB_iframe=true&height=420&width=520"	## Deprecated
+flipPlayerCheckURL="http://www.telestream.net/flip4mac/overview.htm"
 silLightCheckURL="http://www.microsoft.com/getsilverlight/locale/en-us/html/Microsoft%20Silverlight%20Release%20History.htm"
 VLCCheckURL="http://update.videolan.org/vlc/sparkle/vlc-intel64.xml"
 adbeRdrCheckURL="http://get.adobe.com/reader/"
@@ -1420,7 +1420,7 @@ echo "[Final Result]: No new version of ${properName} is available for this Mac.
 
 if [ "$SelfService" ]; then
 	"$cdPath" msgbox --title "${MsgTitle}" --text "${properName} is already up to date" \
-	--informative-text "There are no updates for the ${properName} ${type} available for your Mac. You're already up to date!" \
+	--informative-text "There are no updates for the ${properName} ${type} available for your Mac. You're already up to date at version ${instVers}." \
 	--icon info --button1 " OK, thanks " --width 400 --height 175 --posY top --quiet
 fi
 
@@ -1698,11 +1698,13 @@ function getFlipPlayerVersion ()
 echo "[Stage ${StepNum}]: Determining current version of ${properName}..."
 
 ## Get the current version from the Flip4Mac download page link
-currVers=$(curl -sfL "${URL}" 2>/dev/null | awk -F"'" '/window.location/{print $2}' | awk -F'/' '{print $NF}' | sed -e 's/Flip-Player-//;s/.dmg$//')
+## currVers=$(curl -sfL "${URL}" 2>/dev/null | awk -F"'" '/window.location/{print $2}' | awk -F'/' '{print $NF}' | sed -e 's/Flip-Player-//;s/.dmg$//')	##Disabled
+currVers=$(curl -sfL "${URL}" 2>/dev/null | awk -F'"' '/download-flip-player/{print $2}' | awk -F'/' '{print $NF}' | sed -e 's/Flip-Player-//;s/.dmg$//')
 
 if [[ ! -z "${currVers}" ]]; then
 
-	download_url=$( curl -sf "${URL}" | awk -F"'" '/window.location/{print $2}' )
+##	download_url=$( curl -sf "${URL}" | awk -F"'" '/window.location/{print $2}' )	## Disabled
+	download_url=$( curl -sf "${URL}" | awk -F'"' '/download-flip-player/{print $2}')
 	
 	## Check to make sure the URL is valid	
 	curl -sfI "${download_url}" 2>&1 > /dev/null
