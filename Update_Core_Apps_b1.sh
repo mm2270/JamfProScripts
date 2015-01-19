@@ -1,11 +1,13 @@
 #!/bin/bash
 
-## Script name:		Update_Core_Apps.sh
+## Script name:		Update_Core_Apps_b1.sh
 ## Script author:	Mike Morales
-## Last updated:	2015-01-15
+## Last updated:	2015-01-19
 
-## Last rev notes:
-## Updated to correct issues with the free Flip Player version checking and download URL
+## *** This is a BETA version of this script. Use only for testing purposes ***
+
+## Changed notes:
+## Added functionlaity to update Microsoft Lync.app
 ##
 ## NOTES:
 ## This script will only work with Intel Macs.
@@ -134,6 +136,7 @@ silLightCheckURL="http://www.microsoft.com/getsilverlight/locale/en-us/html/Micr
 VLCCheckURL="http://update.videolan.org/vlc/sparkle/vlc-intel64.xml"
 adbeRdrCheckURL="http://get.adobe.com/reader/"
 MSOfficeCheckURL="http://www.microsoft.com/mac/autoupdate/0409MSOf14.xml"
+lyncUpdCheckURL="http://www.microsoft.com/mac/autoupdate/0409UCCP14.xml"
 
 
 ## Case statement to set proper URLs, application/plug-in paths and function calls
@@ -248,6 +251,18 @@ case "$appName" in
 		URL="${MSOfficeCheckURL}"
 		appPath="/Applications/Microsoft Office 2011/Office/Microsoft Database Daemon.app"
 		runFunc="getOfficeVersion"
+		UAReq="No"
+		CFVers="CFBundleShortVersionString"
+		iconType="--icon"
+		iconFile="package" ;;
+	Lync|MSLync|"MS Lync"|"Microsoft Lync")
+		properName="Microsoft Lync"
+		installerString="lync"
+		type="application"
+		installType="PKG"
+		URL="${lyncUpdCheckURL}"
+		appPath="/Applications/Microsoft Lync.app"
+		runFunc="getLyncVersion"
 		UAReq="No"
 		CFVers="CFBundleShortVersionString"
 		iconType="--icon"
@@ -1324,6 +1339,29 @@ fi
 }
 
 
+function MSLyncNotInstalled ()
+{
+
+## Description: This function only gets called if the policy called for updating Microsoft Lync 2011 and the application was either not installed,
+## or the version information could not be obtained. The policy can only be used to update an existing installation of Lync, not install it new
+
+MSLnotInstText="${properName} could not be found installed on this Mac. This process can only be used to update an existing installation of ${properName}.
+
+If you need this installed, please contact your local IT support for assistance."
+
+if [ "$SelfService" ]; then
+	"$cdPath" msgbox --title " " --text "${properName} is not installed" \
+	--informative-text "${MSLnotInstText}" --icon info --button1 "    OK    " --width 400 --posY top
+	
+	exit 1
+else
+	echo "${properName} wasn't installed on this Mac. Exiting with error..."
+	exit 1
+fi
+
+}
+
+
 function notInstalled ()
 {
 
@@ -1450,6 +1488,43 @@ exit 0
 }
 
 
+function compareVersAlt ()
+{
+
+## Description: This function is run to compare the two version strings previously pulled and
+## determine which is greater or if they are equal
+
+let StepNum=$StepNum+1
+echo "[Stage ${StepNum}]: Comparing versions..."
+
+lyncPrevVersions=$( curl -sf "${URL}" | awk -F'>|<' '/<string>14.*<\/string>/{print $3}' )
+
+if [[ "${instVers}" != "${currVers}" ]]; then
+	while read vers; do
+		if [[ "${instVers}" == "$vers" ]]; then
+#			break
+			echo "[Stage ${StepNum} Result]: Version ${currVers} is newer than the installed version, ${instVers}"
+			if [ "$SelfService" ]; then
+				## Run the installUpdateRequest function
+				installUpdateRequest
+			else
+				## Run the dlLatest function
+				dlLatest
+			fi
+		fi
+	done < <(echo "$lyncPrevVersions")
+
+else
+	echo "[Stage ${StepNum} Result]: The installed version (${instVers}) is current"
+
+	## Run the upToDate function
+	upToDate
+
+fi
+
+}
+
+
 function getinstVersion ()
 {
 
@@ -1469,6 +1544,8 @@ if [[ -e "${appPath}" ]]; then
 		
 		if [[ "${properName}" == "Office 2011" ]]; then
 			SP1CheckReq
+		elif [[ "${properName}" == "Microsoft Lync" ]]; then
+			compareVersAlt
 		else
 			## Run the version comparison function
 			compareVers
@@ -1476,6 +1553,10 @@ if [[ -e "${appPath}" ]]; then
 	else
 		if [[ "${properName}" == "Office 2011" ]]; then
 			MSONotInstalled
+		fi
+		
+		if [[ "${properName}" == "Microsoft Lync" ]]; then
+			MSLyncNotInstalled
 		fi
 	fi
 else
@@ -1805,6 +1886,38 @@ currVers=$( curl -sf "${URL}" 2>/dev/null | awk -F'>|<' '/Payload/{getline; prin
 if [[ ! -z "${currVers}" ]]; then
 
 	download_url=$( curl -sf "${URL}" | awk -F'>|<' '/Location/{getline; print $3}' | tail -1 )
+
+	## Check to see if the URL is valid
+	curl -sfI "${download_url}" 2>&1 > /dev/null
+
+	if [[ "$?" == "0" ]]; then
+		## If we pulled back a current version, get the installed version
+		getinstVersion
+	else
+		echo "Error when getting the download information."
+		dlError
+	fi
+else
+	## Else on error, run the getVersErr function
+	getVersErr
+fi
+
+}
+
+
+function getLyncVersion ()
+{
+
+echo "[Stage ${StepNum}]: Determining current version of ${properName}..."
+
+## Description: This function is called to get the current Microsoft Lync version
+
+## Get the current version from the Microsoft AutoUpdate xml
+currVers=$( curl -sf "${URL}" 2>&1 | awk -F'>|<' '/Title/{getline; print $3}' | awk '{print $2}' )
+
+if [[ ! -z "${currVers}" ]]; then
+
+	download_url=$( curl -sf "${URL}" 2>/dev/null | awk -F'>|<' '/Location/{getline; print $3}' )
 
 	## Check to see if the URL is valid
 	curl -sfI "${download_url}" 2>&1 > /dev/null
