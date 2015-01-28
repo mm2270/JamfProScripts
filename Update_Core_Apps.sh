@@ -2,7 +2,7 @@
 
 ## Script name:		Update_Core_Apps.sh
 ## Script author:	Mike Morales
-## Last updated:	2015-01-15
+## Last updated:	2015-01-28
 
 ## Last rev notes:
 ## Updated to correct issues with the free Flip Player version checking and download URL
@@ -65,9 +65,12 @@ Firefox	\"Firefox\", \"FF\"
 Firefox ESR	\"FirefoxESR\", \"FFESR\"
 VLC	\"VLC\", \"VLC Media Player\"
 Adobe Reader	\"Reader\", \"Adobe Reader\", \"AdobeReader\"
+Dropbox	\"Dropbox\", \"Drop box\"
+Cyberduck	\"Cyberduck\", \"Cyber duck\"
 
 The following can only be UPDATED with this script using the below parameter strings:
 Office 2011	\"MSO\", \"Office\", \"Office 2011\", \"Office2011\",\"MS Office\", \"MSOffice\"
+Microsoft Lync	\"Lync\", \"MSLync\", \"MS Lync\", \"Microsoft Lync\"
 
 ${header}'Silent' and 'Self Service' modes			
 ${normal}This script is run in a silent mode in its default state. Silent mode will auto update the specified app or plug-in (assuming an update is available) and report on the results.
@@ -134,6 +137,9 @@ silLightCheckURL="http://www.microsoft.com/getsilverlight/locale/en-us/html/Micr
 VLCCheckURL="http://update.videolan.org/vlc/sparkle/vlc-intel64.xml"
 adbeRdrCheckURL="http://get.adobe.com/reader/"
 MSOfficeCheckURL="http://www.microsoft.com/mac/autoupdate/0409MSOf14.xml"
+lyncUpdCheckURL="http://www.microsoft.com/mac/autoupdate/0409UCCP14.xml"
+dropboxCheckURL="https://www.dropbox.com/download?plat=mac&amp;full=1"
+cyberduckCheckURL="http://version.cyberduck.ch/changelog.rss"
 
 
 ## Case statement to set proper URLs, application/plug-in paths and function calls
@@ -145,6 +151,7 @@ case "$appName" in
 		installerString="java"
 		type="Plug-In"
 		installType="PKG"
+		fileType="dmg"
 		URL="${javaCheckURL}"
 		appPath="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin"
 		runFunc="getJavaVersion"
@@ -159,6 +166,7 @@ case "$appName" in
 		installerString="flash"
 		type="Plug-In"
 		installType="PKG"
+		fileType="dmg"
 		URL="${flashCheckURL}"
 		appPath="/Library/Internet Plug-Ins/Flash Player.plugin"
 		runFunc="getFlashVersion"
@@ -171,6 +179,7 @@ case "$appName" in
 		installerString="silverlight"
 		type="Plug-In"
 		installType="PKG"
+		fileType="dmg"
 		URL="${silLightCheckURL}"
 		appPath="/Library/Internet Plug-Ins/Silverlight.plugin"
 		runFunc="getSilverlightVersion"
@@ -183,6 +192,7 @@ case "$appName" in
 		installerString="flip player"
 		type="application"
 		installType="APP"
+		fileType="dmg"
 		URL="${flipPlayerCheckURL}"
 		appPath="/Applications/Flip Player.app"
 		runFunc="getFlipPlayerVersion"
@@ -196,6 +206,7 @@ case "$appName" in
 		installerString="firefox"
 		type="browser"
 		installType="APP"
+		fileType="dmg"
 		URL="${firefoxCheckURL}"
 		appPath="/Applications/Firefox.app"
 		runFunc="getFirefoxVersion"
@@ -208,6 +219,7 @@ case "$appName" in
 		installerString="firefox"
 		type="browser"
 		installType="APP"
+		fileType="dmg"
 		URL="${firefoxESRCheckURL}"
 		appPath="/Applications/Firefox.app"
 		runFunc="getFirefoxVersion"
@@ -220,6 +232,7 @@ case "$appName" in
 		installerString="vlc"
 		type="application"
 		installType="APP"
+		fileType="dmg"
 		URL="${VLCCheckURL}"
 		appPath="/Applications/VLC.app"
 		runFunc="getVLCVersion"
@@ -233,6 +246,7 @@ case "$appName" in
 		installerString="adbe"
 		type="application"
 		installType="PKG"
+		fileType="dmg"
 		URL="${adbeRdrCheckURL}"
 		appPath="/Applications/Adobe Reader.app"
 		runFunc="getRdrVersion"
@@ -245,6 +259,7 @@ case "$appName" in
 		installerString="office 2011"
 		type="suite"
 		installType="PKG"
+		fileType="dmg"
 		URL="${MSOfficeCheckURL}"
 		appPath="/Applications/Microsoft Office 2011/Office/Microsoft Database Daemon.app"
 		runFunc="getOfficeVersion"
@@ -252,6 +267,46 @@ case "$appName" in
 		CFVers="CFBundleShortVersionString"
 		iconType="--icon"
 		iconFile="package" ;;
+	Lync|MSLync|"MS Lync"|"Microsoft Lync")
+		properName="Microsoft Lync"
+		installerString="lync"
+		type="application"
+		installType="PKG"
+		fileType="dmg"
+		URL="${lyncUpdCheckURL}"
+		appPath="/Applications/Microsoft Lync.app"
+		runFunc="getLyncVersion"
+		UAReq="No"
+		CFVers="CFBundleShortVersionString"
+		iconType="--icon"
+		iconFile="package" ;;
+	Dropbox|"Drop box")
+		properName="Dropbox"
+		installerString="dropbox"
+		type="application"
+		installType="APP"
+		fileType="dmg"
+		URL="${dropboxCheckURL}"
+		appPath="/Applications/Dropbox.app"
+		runFunc="getDropboxVersion"
+		UAReq="No"
+		CFVers="CFBundleShortVersionString"
+		iconType="--icon-file"
+		iconFile="/System/Library/CoreServices/DiskImageMounter.app/Contents/Resources/diskcopy-doc.icns" ;;
+	Cyberduck|"Cyber duck")
+		properName="Cyberduck"
+		installerString="cyberduck"
+		type="application"
+		installType="APP"
+		fileType="tar.gz"
+		URL="${cyberduckCheckURL}"
+		appPath="/Applications/Cyberduck.app"
+		runFunc="getCyberduckVersion"
+		curlFlag="-L"
+		UAReq="No"
+		CFVers="CFBundleShortVersionString"
+		iconType="--icon-file"
+		iconFile="/System/Library/CoreServices/Archive Utility.app/Contents/Resources/bah-tar.icns" ;;
 	*)
 		echo -e "The application, suite or plug-in specified ( ${appName} ) has no reference in this script.\nPlease check your entry and try again."
 		exit 1
@@ -398,7 +453,7 @@ if [[ "${properName}" == "Office 2011" ]]; then
 else
 	## Delete the downloaded disk image from /Library/Application Support/ITUpdater/Downloads/
 	echo "Deleting downloaded disk image..."
-	rm -f "/Library/Application Support/ITUpdater/Downloads/${properName}_${currVers}.dmg"
+	rm -f "/Library/Application Support/ITUpdater/Downloads/${properName}_${currVers}.${fileType}"
 fi
 
 ## If we previously renamed the target application,
@@ -455,6 +510,140 @@ fi
 }
 
 
+function untarUpdate ()
+{
+
+## Description: This function is called when the downloaded file is in tar.gz format.
+## The tar.gz file's total line count is calculated and used for extraction progress
+
+echo "[Stage ${StepNum}]: Extracting archive for ${properName}..."
+
+## Generate the proper path for extraction based on full application path
+untarLoc=$( echo "$appPath" | awk -F'/' 'sub(FS $NF,x)' )
+
+extractionFile="/Library/Application Support/ITUpdater/Downloads/${properName}_${currVers}.${fileType}"
+
+if [ "$SelfService" ]; then
+
+	## Check to see if the application is running
+	AppProc=$( ps axc | grep -i "${properName}" )
+
+	if [[ "$AppProc" != "" ]]; then
+		appOpenText="Please quit ${properName}, then click Continue to proceed with the installation."
+		echo "0 ${properName} is running..." >&20
+		quitAppMsg=$( "$cdPath" msgbox --title "$MsgTitle" --text "${properName} is running" \
+		--informative-text "$appOpenText" --button1 "  Continue  " --button2 "  Cancel  " \
+		--width 400 --icon caution --posY center )
+
+		if [[ "$quitAppMsg" == "1" ]]; then
+			untarUpdate
+		else
+			echo "100 Installation has been cancelled..." >&20
+			hdiutil detach -force "${updateVolName}"
+			sleep 0.5
+			rm -f "/Library/Application Support/ITUpdater/Downloads/${properName}_${currVers}.${fileType}"
+			exit 0
+		fi
+	else
+		## If an existing version of the target app is in the /Applications/ path,
+		## rename and hide it before copying in the new version
+		if [ -d "${appPath}" ]; then
+			echo "0 Removing any previous version..." >&20
+			echo "	Renaming previous installation"
+			mv "${appPath}" "${appPath}_old" 2> /dev/null
+			chflags hidden "${appPath}_old" 2> /dev/null
+		fi
+
+		sleep 1
+
+		let StepNum=$StepNum+1
+		echo "[Stage ${StepNum}]: Copying ${updateAPPName} to /Applications/"
+
+		## Count the total lines in the extraction
+		echo "0 Please wait. Calculating installation..." >&20
+		noLines=$( tar tzvf "$extractionFile" 2>&1 | wc -l | sed 's/^ *//' )
+
+		linect=0
+		while read line; do
+			pct=$(expr $linect \* 100 / $noLines)
+			echo "$pct ${pct}% -  Please wait. Installing ${properName}..." >&20
+			linect=$((linect+1))
+		done < <( tar -xvf "$extractionFile" -C "${untarLoc}/" 2>&1 )
+
+		## Check to make sure the copy was successful
+		if [[ ! -d "${appPath}" ]]; then
+			echo "	${properName} app could not be copied to the Applications folder"
+			exit_status=1
+			cleanUpAction_Failure
+		fi
+
+		let StepNum=$StepNum+1
+		echo "[Stage ${StepNum}]: Adjusting permissions on ${appPath}"
+		chown -R ${loggedInUser}:staff "${appPath}"
+		chmod -R 755 "${appPath}"
+		if [[ $(xattr -l "${appPath}" | grep "com.apple.quarantine") ]]; then
+			echo "	Removing quarantine flag on ${appPath}"
+			xattr -d com.apple.quarantine "${appPath}"
+		fi
+
+		let StepNum=$StepNum+1
+		echo "[Stage ${StepNum}]: Install done. Cleaning up..."
+	
+		## Something goes here
+		sleep 0.5
+	
+		## Run the function to get the new version number
+		getNewVers
+	fi
+fi
+
+## If SelfService mode is not set, check to see if the target application is open
+## Set a flag for later if the app is currently open
+
+## Check to see if the application is running
+AppProc=$( ps axc | grep -i "${properName}" )
+
+if [[ ! "$SelfService" ]]; then
+	if [[ "$AppProc" != "" ]]; then
+		appRunning="yes"
+	fi
+
+	## Silent mode operation
+	## Extract the file into its final destination
+	tar -xvf "$extractionFile" -C "${untarLoc}/"
+	
+	sleep 0.5
+	
+	## Check to make sure the copy was successful
+	if [[ ! -d "${appPath}" ]]; then
+		echo "	${properName} app could not be copied to the Applications folder"
+		exit_status=1
+		cleanUpAction_Failure
+	fi
+
+	let StepNum=$StepNum+1
+	echo "[Stage ${StepNum}]: Adjusting permissions on ${appPath}"
+	chown -R ${loggedInUser}:staff "${appPath}"
+	chmod -R 755 "${appPath}"
+	if [[ $(xattr -l "${appPath}" | grep "com.apple.quarantine") ]]; then
+		echo "	Removing quarantine flag on ${appPath}"
+		xattr -d com.apple.quarantine "${appPath}"
+	fi
+
+	let StepNum=$StepNum+1
+	echo "[Stage ${StepNum}]: Install done. Cleaning up..."
+
+	## Something goes here
+	sleep 0.5
+	
+	## Run the function to get the new version number
+	getNewVers
+
+fi
+
+}
+
+
 function copyAPPUpdate2 ()
 {
 
@@ -479,7 +668,7 @@ if [[ "$SelfService" ]]; then
 			echo "100 Installation has been cancelled..." >&20
 			hdiutil detach -force "${updateVolName}"
 			sleep 0.5
-			rm -f "/Library/Application Support/ITUpdater/Downloads/${properName}_${currVers}.dmg"
+			rm -f "/Library/Application Support/ITUpdater/Downloads/${properName}_${currVers}.${fileType}"
 			exit 0
 		fi
 	else
@@ -607,9 +796,9 @@ fi
 
 ## Mount the disk image and capture the mounted volume's name
 if [[ "${properName}" == "Flip Player" ]]; then
-	updateVolName=$( echo "Y" | /usr/bin/hdiutil attach "/Library/Application Support/ITUpdater/Downloads/${properName}_${currVers}.dmg" -nobrowse -noverify -noautoopen 2>&1 | awk -F'[\t]' '/\/Volumes/{ print $NF }' )
+	updateVolName=$( echo "Y" | /usr/bin/hdiutil attach "/Library/Application Support/ITUpdater/Downloads/${properName}_${currVers}.${fileType}" -nobrowse -noverify -noautoopen 2>&1 | awk -F'[\t]' '/\/Volumes/{ print $NF }' )
 else
-	updateVolName=$( /usr/bin/hdiutil attach "/Library/Application Support/ITUpdater/Downloads/${properName}_${currVers}.dmg" -nobrowse -noverify -noautoopen 2>&1 | awk -F'[\t]' '/\/Volumes/{ print $NF }' )
+	updateVolName=$( /usr/bin/hdiutil attach "/Library/Application Support/ITUpdater/Downloads/${properName}_${currVers}.${fileType}" -nobrowse -noverify -noautoopen 2>&1 | awk -F'[\t]' '/\/Volumes/{ print $NF }' )
 fi
 	
 if [ "$?" == "0" ]; then
@@ -650,11 +839,11 @@ function installPKGUpdate ()
 let StepNum=$StepNum+1
 echo "[Stage ${StepNum}]: Silently mounting the ${properName} disk image..."
 
-updateVolName=$( /usr/bin/hdiutil attach "/Library/Application Support/ITUpdater/Downloads/${properName}_${currVers}.dmg" -nobrowse -noverify -noautoopen 2>&1 | awk -F'[\t]' '/\/Volumes/{ print $NF }' )
+updateVolName=$( /usr/bin/hdiutil attach "/Library/Application Support/ITUpdater/Downloads/${properName}_${currVers}.${fileType}" -nobrowse -noverify -noautoopen 2>&1 | awk -F'[\t]' '/\/Volumes/{ print $NF }' )
 
 if [[ "$?" == "0" ]]; then
 	## Get the package name in the mounted disk image
-	updatePKGName=$( ls "$updateVolName" | grep ".pkg$|.mpkg$" | grep -i "${installerString}" )
+	updatePKGName=$( ls "$updateVolName" | egrep ".pkg$|.mpkg$" | grep -i "${installerString}" )
 
 	if [[ ! -z "${updatePKGName}" ]]; then
 		echo "	A package was located in the mounted volume. Getting package details..."
@@ -726,7 +915,7 @@ function installMSOUpdatesSS ()
 ## Create array with the DMG names
 while read item; do
 	MSODMGs+=("$item")
-done < <(ls "/Library/Application Support/ITUpdater/Downloads/" | grep ".dmg$")
+done < <(ls "/Library/Application Support/ITUpdater/Downloads/" | grep ".${fileType}$")
 
 for DMG in "${MSODMGs[@]}"; do
 
@@ -809,7 +998,7 @@ function installMSOUpdates ()
 ## Create array with the DMG names
 while read item; do
 	MSODMGs+=("$item")
-done < <(ls "/Library/Application Support/ITUpdater/Downloads/" | grep ".dmg$")
+done < <(ls "/Library/Application Support/ITUpdater/Downloads/" | grep ".${fileType}$")
 
 for DMG in "${MSODMGs[@]}"; do
 
@@ -875,12 +1064,20 @@ function installPKGUpdateSS ()
 ## Description: This function is called when the specified app is in a package install format and the SelfService flag is set.
 ## It first mounts the disk image, gets the volume name, the enclosed pkg name, then proceeds with the installation.
 
+if [ "$fileType" == "dmg" ]; then
+	echo "Download file type is dmg. Continuing..."
+elif [ "$fileType" == "tar.gz" ]; then
+	echo "Download file type is tar.gz. Moving to another install function..."
+	
+	installTARUpdateSS
+fi
+
 let StepNum=$StepNum+1
 echo "[Stage ${StepNum}]: Silently mounting the ${properName} disk image..."
 
 echo "0 Accessing downloaded file..." >&20
 
-updateVolName=$( /usr/bin/hdiutil attach "/Library/Application Support/ITUpdater/Downloads/${properName}_${currVers}.dmg" -nobrowse -noverify -noautoopen 2>&1 | awk -F'[\t]' '/\/Volumes/{ print $NF }' )
+updateVolName=$( /usr/bin/hdiutil attach "/Library/Application Support/ITUpdater/Downloads/${properName}_${currVers}.${fileType}" -nobrowse -noverify -noautoopen 2>&1 | awk -F'[\t]' '/\/Volumes/{ print $NF }' )
 
 if [[ "$?" == "0" ]]; then
 	## Get the package name in the mounted disk image
@@ -1021,12 +1218,12 @@ if [ "$SelfService" ]; then
 		pct=0
 		while [[ "$pct" -lt 100 ]]; do
 			sleep 0.2
-			dlSize=$(du -hk "/Library/Application Support/ITUpdater/Downloads/${allUpdNames[$ix]}.dmg" | awk '{print $1}' 2>/dev/null)
+			dlSize=$(du -hk "/Library/Application Support/ITUpdater/Downloads/${allUpdNames[$ix]}.${fileType}" | awk '{print $1}' 2>/dev/null)
 			if [ "$dlSize" != "" ]; then
 				pct=$(expr ${dlSize} \* 100 / ${adjSize})
 				echo "$pct ${pct}% -  Please wait. Downloading ${allUpdNames[$ix]}..." >&20
 			fi
-		done < <(curl -sf "$update" -o "/Library/Application Support/ITUpdater/Downloads/${allUpdNames[$ix]}.dmg")		
+		done < <(curl -sf "$update" -o "/Library/Application Support/ITUpdater/Downloads/${allUpdNames[$ix]}.${fileType}")		
 		let ix=$ix+1
 	done
 
@@ -1034,18 +1231,18 @@ else
 	## If SelfService is not set, download the updates silently
 	ix=0
 	for update in "${allMSOUpdates[@]}"; do
-		curl -sf "$update" -o "/Library/Application Support/ITUpdater/Downloads/${allUpdNames[$ix]}.dmg"		
+		curl -sf "$update" -o "/Library/Application Support/ITUpdater/Downloads/${allUpdNames[$ix]}.${fileType}"		
 		if [ "$?" == "0" ]; then
-			echo "${allUpdNames[$ix]}.dmg downloaded successfully..."
+			echo "${allUpdNames[$ix]}.${fileType} downloaded successfully..."
 			let ix=$ix+1
 		else
-			echo "Error: could not download ${allUpdNames[$ix]}.dmg"
+			echo "Error: could not download ${allUpdNames[$ix]}.${fileType}"
 			exit 1
 		fi
 	done
 fi
 
-if [[ -e "/Library/Application Support/ITUpdater/Downloads/${allUpdNames[0]}.dmg"  && "/Library/Application Support/ITUpdater/Downloads/${allUpdNames[1]}.dmg" ]]; then
+if [[ -e "/Library/Application Support/ITUpdater/Downloads/${allUpdNames[0]}.${fileType}"  && "/Library/Application Support/ITUpdater/Downloads/${allUpdNames[1]}.${fileType}" ]]; then
 	echo "All MS Office downloads successful. Moving to installation"
 	
 	if [ "$SelfService" ]; then
@@ -1122,7 +1319,7 @@ if [ "$SelfService" ]; then
 	echo "[Stage ${StepNum}]: Downloading the latest version of ${properName}..."
 
 	## Start the download and push the process to the background
-	curl -sf $curlFlag "${download_url}" -o "/Library/Application Support/ITUpdater/Downloads/${properName}_${currVers}.dmg" &
+	curl -sf $curlFlag "${download_url}" -o "/Library/Application Support/ITUpdater/Downloads/${properName}_${currVers}.${fileType}" &
 
 	## Wait a moment before beginning calculations
 	sleep 0.2
@@ -1130,7 +1327,7 @@ if [ "$SelfService" ]; then
 	pct=0
 	while [[ "$pct" -lt 100 ]]; do
 		sleep 0.2
-		dlSize=$(du -hk "/Library/Application Support/ITUpdater/Downloads/${properName}_${currVers}.dmg" | awk '{print $1}' 2>/dev/null)
+		dlSize=$(du -hk "/Library/Application Support/ITUpdater/Downloads/${properName}_${currVers}.${fileType}" | awk '{print $1}' 2>/dev/null)
 		if [ "$dlSize" != "" ]; then
 			pct=$(expr ${dlSize} \* 100 / ${adjSize})
 			echo "$pct ${pct}% - Please wait. Downloading the latest ${properName}..." >&20
@@ -1140,11 +1337,11 @@ if [ "$SelfService" ]; then
 	sleep 0.7
 else
 	## This curl command happens when SelfService is not set. It is not pushed to the background
-	curl -sf $curlFlag "${download_url}" -o "/Library/Application Support/ITUpdater/Downloads/${properName}_${currVers}.dmg"
+	curl -sf $curlFlag "${download_url}" -o "/Library/Application Support/ITUpdater/Downloads/${properName}_${currVers}.${fileType}"
 fi
 
-if [[ -e "/Library/Application Support/ITUpdater/Downloads/${properName}_${currVers}.dmg" ]]; then
-	echo "	Download of ${properName}_${currVers}.dmg was successful"
+if [[ -e "/Library/Application Support/ITUpdater/Downloads/${properName}_${currVers}.${fileType}" ]]; then
+	echo "	Download of ${properName}_${currVers}.${fileType} was successful"
 
 	if [[ "$installType" == "PKG" ]]; then
 		echo "	Item is a package installer"
@@ -1155,10 +1352,15 @@ if [[ -e "/Library/Application Support/ITUpdater/Downloads/${properName}_${currV
 		fi
 	elif [[ "$installType" == "APP" ]]; then
 		echo "	Item is an app bundle"
-		copyAPPUpdate1
+		
+		if [[ "$fileType" == "dmg" ]]; then
+			copyAPPUpdate1
+		elif [[ "$fileType" == "tar.gz" ]]; then
+			untarUpdate
+		fi
 	fi
 else
-	echo "	Download of ${properName}_${currVers}.dmg failed. Exiting..."
+	echo "	Download of ${properName}_${currVers}.${fileType} failed. Exiting..."
 	## Shutting down the progress bar
 	echo "Closing progress bar."
 	exec 20>&-
@@ -1324,6 +1526,29 @@ fi
 }
 
 
+function MSLyncNotInstalled ()
+{
+
+## Description: This function only gets called if the policy called for updating Microsoft Lync 2011 and the application was either not installed,
+## or the version information could not be obtained. The policy can only be used to update an existing installation of Lync, not install it new
+
+MSLnotInstText="${properName} could not be found installed on this Mac. This process can only be used to update an existing installation of ${properName}.
+
+If you need this installed, please contact your local IT support for assistance."
+
+if [ "$SelfService" ]; then
+	"$cdPath" msgbox --title " " --text "${properName} is not installed" \
+	--informative-text "${MSLnotInstText}" --icon info --button1 "    OK    " --width 400 --posY top
+	
+	exit 1
+else
+	echo "${properName} wasn't installed on this Mac. Exiting with error..."
+	exit 1
+fi
+
+}
+
+
 function notInstalled ()
 {
 
@@ -1450,6 +1675,43 @@ exit 0
 }
 
 
+function compareVersAlt ()
+{
+
+## Description: This function is run to compare the two version strings previously pulled and
+## determine which is greater or if they are equal
+
+let StepNum=$StepNum+1
+echo "[Stage ${StepNum}]: Comparing versions..."
+
+lyncPrevVersions=$( curl -sf "${URL}" | awk -F'>|<' '/<string>14.*<\/string>/{print $3}' )
+
+if [[ "${instVers}" != "${currVers}" ]]; then
+	while read vers; do
+		if [[ "${instVers}" == "$vers" ]]; then
+#			break
+			echo "[Stage ${StepNum} Result]: Version ${currVers} is newer than the installed version, ${instVers}"
+			if [ "$SelfService" ]; then
+				## Run the installUpdateRequest function
+				installUpdateRequest
+			else
+				## Run the dlLatest function
+				dlLatest
+			fi
+		fi
+	done < <(echo "$lyncPrevVersions")
+
+else
+	echo "[Stage ${StepNum} Result]: The installed version (${instVers}) is current"
+
+	## Run the upToDate function
+	upToDate
+
+fi
+
+}
+
+
 function getinstVersion ()
 {
 
@@ -1469,6 +1731,8 @@ if [[ -e "${appPath}" ]]; then
 		
 		if [[ "${properName}" == "Office 2011" ]]; then
 			SP1CheckReq
+		elif [[ "${properName}" == "Microsoft Lync" ]]; then
+			compareVersAlt
 		else
 			## Run the version comparison function
 			compareVers
@@ -1476,6 +1740,10 @@ if [[ -e "${appPath}" ]]; then
 	else
 		if [[ "${properName}" == "Office 2011" ]]; then
 			MSONotInstalled
+		fi
+		
+		if [[ "${properName}" == "Microsoft Lync" ]]; then
+			MSLyncNotInstalled
 		fi
 	fi
 else
@@ -1604,7 +1872,7 @@ if [[ ! -z "${currVers}" ]]; then
 	currMajVers=$(echo "$currVers" | cut -d. -f1)
 
 	## Set the full download URL from the current version information pulled in the previous command
-	download_url="http://fpdownload.macromedia.com/get/flashplayer/current/licensing/mac/install_flash_player_${currMajVers}_osx_pkg.dmg"
+	download_url="http://fpdownload.macromedia.com/get/flashplayer/current/licensing/mac/install_flash_player_${currMajVers}_osx_pkg.${fileType}"
 
 	## Check the URL to make sure its valid
 	curl -sfI "$download_url" 2>&1 > /dev/null
@@ -1772,7 +2040,7 @@ if [[ ! -z "${currVers}" ]]; then
 
 	## Set up the download URL
 	## Edited 12-12-14 to use generic URL for all localizations
-	download_url="http://ardownload.adobe.com/pub/adobe/reader/mac/${currMajVers}.x/${currVers}/misc/AdbeRdrUpd${currVersString}.dmg"
+	download_url="http://ardownload.adobe.com/pub/adobe/reader/mac/${currMajVers}.x/${currVers}/misc/AdbeRdrUpd${currVersString}.${fileType}"
 
 	## Check to see if the URL is valid
 	curl -sfI "${download_url}" 2>&1 > /dev/null
@@ -1822,6 +2090,103 @@ else
 fi
 
 }
+
+
+function getLyncVersion ()
+{
+
+echo "[Stage ${StepNum}]: Determining current version of ${properName}..."
+
+## Description: This function is called to get the current Microsoft Lync version
+
+## Get the current version from the Microsoft AutoUpdate xml
+currVers=$( curl -sf "${URL}" 2>&1 | awk -F'>|<' '/Title/{getline; print $3}' | awk '{print $2}' )
+
+if [[ ! -z "${currVers}" ]]; then
+
+	download_url=$( curl -sf "${URL}" 2>/dev/null | awk -F'>|<' '/Location/{getline; print $3}' )
+
+	## Check to see if the URL is valid
+	curl -sfI "${download_url}" 2>&1 > /dev/null
+
+	if [[ "$?" == "0" ]]; then
+		## If we pulled back a current version, get the installed version
+		getinstVersion
+	else
+		echo "Error when getting the download information."
+		dlError
+	fi
+else
+	## Else on error, run the getVersErr function
+	getVersErr
+fi
+
+}
+
+
+function getDropboxVersion ()
+{
+
+echo "[Stage ${StepNum}]: Determining current version of ${properName}..."
+
+## Description: This function is called to get the current Dropbox version
+
+## Get the current version from the Dropbox download link
+currVers=$( curl -sf "${URL}" 2>&1 | awk -F'"' '/<a href=/{print $2}' | awk -F"/" '{print $NF}' | sed -e 's/^Dropbox%20//;s/.dmg$//' )
+
+if [[ ! -z "${currVers}" ]]; then
+
+	download_url=$( curl -sf "${URL}" 2>/dev/null | awk -F'"' '/<a href=/{print $2}' )
+
+	## Check to see if the URL is valid
+	curl -sfI "${download_url}" 2>&1 > /dev/null
+
+	if [[ "$?" == "0" ]]; then
+		## If we pulled back a current version, get the installed version
+		getinstVersion
+	else
+		echo "Error when getting the download information."
+		dlError
+	fi
+else
+	## Else on error, run the getVersErr function
+	getVersErr
+fi
+
+}
+
+
+function getCyberduckVersion ()
+{
+
+echo "[Stage ${StepNum}]: Determining current version of ${properName}..."
+
+## Description: This function is called to get the current Cyberduck version
+
+## Get the current version from the Cyberduck rss feed
+currVers=$( curl -sf "${URL}" 2>&1 | awk -F'"' '/shortVersionString=/{print $2}' )
+
+if [[ ! -z "${currVers}" ]]; then
+
+	download_url=$( curl -sf "${URL}" 2>/dev/null | awk -F'"' '/url=/{print $2}' )
+
+	## Check to see if the URL is valid
+	curl -sfI "${download_url}" 2>&1 > /dev/null
+
+	if [[ "$?" == "0" ]]; then
+		## If we pulled back a current version, get the installed version
+		getinstVersion
+	else
+		echo "Error when getting the download information."
+		dlError
+	fi
+else
+	## Else on error, run the getVersErr function
+	getVersErr
+fi
+
+}
+
 
 ## [---------------------------------------- END - APPLICATION/PLUG-IN VERSION GATHERING FUNCTIONS ---------------------------------------------]
 
