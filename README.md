@@ -24,7 +24,7 @@ Details on the script are as follows:
   * **Microsoft Office 2011** (updates only)
   * **Silverlight**
   * **VLC**
-  * **Microsoft Lync**
+  * **Microsoft Lync** (updates only)
   * **Dropbox**
   * **Cyberduck**  
   
