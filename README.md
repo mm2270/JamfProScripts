@@ -17,16 +17,16 @@ Details on the script are as follows:
 - Can update any of the following applications and plug-ins:
   * **Adobe Reader**
   * **Adobe Flash Player**
+  * **Cyberduck**
+  * **Dropbox**
   * **Firefox**
   * **Firefox ESR**
   * **Flip Player** (free version)
-  * **Oracle Java**
-  * **Microsoft Office 2011** (updates only)
-  * **Silverlight**
-  * **VLC**
   * **Microsoft Lync** (updates only)
-  * **Dropbox**
-  * **Cyberduck**  
+  * **Microsoft Office 2011** (updates only)
+  * **Oracle Java**
+  * **Silverlight**
+  * **VLC**  
   
 - Can be used in a "silent" mode to update apps/Plug-ins silently on a target Mac, or "Self Service" mode to prompt an end user to install an update and show them both download and install progress, new version information, and success or failure notifications.
 - Has built in version checking against installed applications (if its installed), by comparing it to the latest release from the vendor. The version checking can handle odd version naming conventions, so that it ensures it is only "upgrading" a client, not downgrading it.
