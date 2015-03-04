@@ -2,10 +2,11 @@
 
 ## Script name:		Update_Core_Apps.sh
 ## Script author:	Mike Morales
-## Last updated:	2015-01-28
+## Last updated:	2015-03-04
 
 ## Last rev notes:
-## Updated to correct issues with the free Flip Player version checking and download URL
+## Updated to account for Oracle Java's new .app installer. Should correctly install the pkg inside the .app bundle if present.
+## It should be backward compatiblle with older OS X versions that would still pull down pre 1.8 versions of Java
 ##
 ## NOTES:
 ## This script will only work with Intel Macs.
@@ -843,7 +844,15 @@ updateVolName=$( /usr/bin/hdiutil attach "/Library/Application Support/ITUpdater
 
 if [[ "$?" == "0" ]]; then
 	## Get the package name in the mounted disk image
-	updatePKGName=$( ls "$updateVolName" | egrep ".pkg$|.mpkg$" | grep -i "${installerString}" )
+	if [[ "${properName}" == "Oracle Java" ]]; then
+		updatePKGName=$( ls "$updateVolName" | egrep ".pkg$|.mpkg$|.app" | grep -i "${installerString}" )
+		
+		if [[ "${updatePKGName##*.}" == "app" ]]; then
+			updatePKGName="${updatePKGName}/Contents/Resources/JavaAppletPlugin.pkg"
+		fi
+	else
+		updatePKGName=$( ls "$updateVolName" | egrep ".pkg$|.mpkg$" | grep -i "${installerString}" )
+	fi
 
 	if [[ ! -z "${updatePKGName}" ]]; then
 		echo "	A package was located in the mounted volume. Getting package details..."
@@ -1081,13 +1090,22 @@ updateVolName=$( /usr/bin/hdiutil attach "/Library/Application Support/ITUpdater
 
 if [[ "$?" == "0" ]]; then
 	## Get the package name in the mounted disk image
-	updatePKGName=$( ls "$updateVolName" | egrep ".pkg$|.mpkg$" | grep -i "${installerString}" )
+	if [[ "${properName}" == "Oracle Java" ]]; then
+		updatePKGName=$( ls "$updateVolName" | egrep ".pkg$|.mpkg$|.app" | grep -i "${installerString}" )
+		
+		if [[ "${updatePKGName##*.}" == "app" ]]; then
+			updatePKGName="${updatePKGName}/Contents/Resources/JavaAppletPlugin.pkg"
+		fi
+	else
+		updatePKGName=$( ls "$updateVolName" | egrep ".pkg$|.mpkg$" | grep -i "${installerString}" )
+	fi
 
 	if [[ ! -z "${updatePKGName}" ]]; then
 		echo "	A package was located in the mounted volume. Getting package details..."
 
 		sleep 1
 
+		echo "Installing the ${properName} pkg update..."
 		echo "0 Preparing for installation..." >&20
 		
 		let StepNum=$StepNum+1
