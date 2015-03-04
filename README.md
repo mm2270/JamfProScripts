@@ -8,7 +8,8 @@ A collection of scripts I have worked on to be used with the Casper Suite, and i
 [create_SelfService_Plug-in.sh](#create_selfservice_plug-insh)  
 [install_select_SS_plug-ins.sh](#install_select_ss_plug-inssh) *(Companion script for create_SelfService_Plug-in.sh)*  
 [install_Latest_GoogleChrome-SelfService.sh](#install_latest_googlechrome-selfservicesh)  
-[selectable-SoftwareUpdate.sh](#selectable-softwareupdatesh)
+[selectable-SoftwareUpdate.sh](#selectable-softwareupdatesh)  
+[repair_permissions.sh](#repair_permissionssh)
 ####**Update_Core_Apps.sh**<br>
 The Update_Core_Apps script can be used to update many common free applications and Plug-ins. Despite the word "Update" in its name, it can also be used to install most of these applications and Plug-ins new on a target Mac.
 
@@ -102,6 +103,19 @@ Requirements:
 - Requires the current beta release of cocoaDialog to be installed on the target Mac.
 - Displays a checkbox dialog with available Software Updates to be installed.
 - Provides feedback on installations as they run with a moving progress bar.
+
+<br>
+####**repair_permissions.sh**<br>
+- Requires the current beta release of cocoaDialog to be installed on the target Mac.
+- Optionally displays a 'preamble' message to the user before running the disk permissions repair.
+- Optionally allows the user to 'opt out' of future preamble messages with a checkbox.
+- When disk permissions repair is run, accurate progress is displayed with a cocoaDialog progress bar.
+- At the completion of the disk permissions repair, a final textbox style dialog appears with the repair results.
+- If any repair problems are detected, it brings this to the attention of the user in the textbox dialog heading.
+- If the option is enabled within the script with a variable, and problems are detected, an email can be sent to an admin or group email address with details on the Mac that ran the policy, plus the results of the repair. Note that this function uses the standard Unix mail function. This may not always work in all environments depending on firewall restrictions.
+
+Please read the notes contained within the script for instructions on how to use the various options, and be sure to add a valid email address to it before deploying.  
+Currently this script does not use Casper Suite script parameters. If I receive enough feedback on wanting this functionality, I will add it in. In the interim, feel free to modify the script to use passed parameters for some of the options.
 
 ####**installLatestFlashPlayer-v1.sh**<br>
 (This script has been replaced by Update_Core_Apps.sh)
