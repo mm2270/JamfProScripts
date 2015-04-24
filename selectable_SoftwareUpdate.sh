@@ -11,6 +11,14 @@ cdPath="/Library/Application Support/JAMF/bin/cocoaDialog.app/Contents/MacOS/coc
 if [ ! -e "$cdPath" ]; then
 	echo "cocoaDialog was not found in the path specified. It may not be installed, or the path is wrong. Exiting..."
 	exit 1
+else
+	## If cocoaDialog was found, check to make sure its the 3.0 beta 7 version
+	exePath=$(echo ${cdPath#$(dirname "$(dirname "$cdPath")")/})
+	cDInfoPath="$(echo "$cdPath" | sed "s|$exePath||")Info.plist"
+	if [[ $(defaults read "$cDInfoPath" CFBundleShortVersionString) != "3.0-beta7" ]]; then
+		echo "The version of cocoaDialog installed is not 3.0-beta 7. This version is required for proper functioning of this script."
+		exit 1
+	fi
 fi
 
 ##	Set the installAllAtLogin flag here to 'yes' or leave it blank (equivalent to 'no')
