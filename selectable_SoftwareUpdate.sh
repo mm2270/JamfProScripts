@@ -16,7 +16,7 @@ else
 	exePath=$(echo ${cdPath#$(dirname "$(dirname "$cdPath")")/})
 	cDInfoPath="$(echo "$cdPath" | sed "s|$exePath||")Info.plist"
 	if [[ $(defaults read "$cDInfoPath" CFBundleShortVersionString) != "3.0-beta7" ]]; then
-		echo "The version of cocoaDialog installed is not 3.0-beta 7. This version is required for proper functioning of this script."
+		echo "The version of cocoaDialog installed is not 3.0-beta 7. The 3.0-beta7 version is required for proper functioning of this script."
 		exit 1
 	fi
 fi
