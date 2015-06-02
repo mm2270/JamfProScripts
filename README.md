@@ -9,7 +9,9 @@ A collection of scripts I have worked on to be used with the Casper Suite, and i
 [install_select_SS_plug-ins.sh](#install_select_ss_plug-inssh) *(Companion script for create_SelfService_Plug-in.sh)*  
 [install_Latest_GoogleChrome-SelfService.sh](#install_latest_googlechrome-selfservicesh)  
 [selectable-SoftwareUpdate.sh](#selectable-softwareupdatesh)  
-[repair_permissions.sh](#repair_permissionssh)
+[repair_permissions.sh](#repair_permissionssh)  
+[download_jss_scripts.sh](#download_jss_scriptssh)
+
 ####**Update_Core_Apps.sh**<br>
 The Update_Core_Apps script can be used to update many common free applications and Plug-ins. Despite the word "Update" in its name, it can also be used to install most of these applications and Plug-ins new on a target Mac.
 
@@ -115,7 +117,26 @@ Requirements:
 - If the option is enabled within the script with a variable, and problems are detected, an email can be sent to an admin or group email address with details on the Mac that ran the policy, plus the results of the repair. Note that this function uses the standard Unix mail function. This may not always work in all environments depending on firewall restrictions.
 
 Please read the notes contained within the script for instructions on how to use the various options, and be sure to add a valid email address to it before deploying.  
-Currently this script does not use Casper Suite script parameters. If I receive enough feedback on wanting this functionality, I will add it in. In the interim, feel free to modify the script to use passed parameters for some of the options.
+Currently this script does not use Casper Suite script parameters. If I receive enough feedback on wanting this functionality, I will add it in. In the interim, feel free to modify the script to use passed parameters for some of the options.  
+
+<br>
+####**download_jss_scripts.sh**<br>
+This script, which is designed to be used with a Casper Suite JSS version 9.x, can be used to download all scripts located on the JSS into a directory. Each script is downloaded with the display name as shown for it in the JSS. The script contents are cleaned after saving, to remove any web formatted characters which would prevent the script from being usable.
+
+#####Basic usage:  
+The script can be run directly in Terminal, or via the jamf binary. To use it you must pass an API read username and password to it to use for API commands. A third parameter that can be passed is the JSS URL. This is optional if running the script from a Mac that is currently enrolled in the target JSS.  
+
+#####Examples:  
+`sudo jamf runScript -script download_jss_scripts.sh -path /Users/me/Desktop/ -p1 apiuser -p2 apipassword [optional] -p3 https://my.jss.org:8443`  
+
+Or  
+
+`sudo /Users/me/Desktop/download_jss_scripts.sh -a apiuser -p apipassword -s https://my.jss.org:8443`  
+
+#####To show a help page for the script, in Terminal:  
+`/path/to/script/download_jss_scripts.sh -h`  
+<br>
+<br>
 
 ####**installLatestFlashPlayer-v1.sh**<br>
 (This script has been replaced by Update_Core_Apps.sh)
