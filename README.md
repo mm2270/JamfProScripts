@@ -62,9 +62,11 @@ The script works in two modes:
 
 1. If no value (integer) in minutes is passed to the script in Parameter 4 when its run, it will send up a dialog with cocoaDialog with pre-defined reboot options that the user can choose from. For example, you may give the user the option of rebooting "2 hours from now" "30 minutes from now" or "5 minutes from now"  
 2. If a value (integer) in minutes is passed to the script in Parameter 4, it will instead auto schedule the reboot accordingly in the future exactly the number of minutes that was passed in the parameter.  
- * In either case, the schedule is created dynamically with a LaunchDaemon and companion script, both of which are created at the time the script runs.  
+ * In either case, the schedule is created dynamically with a LaunchDaemon that uses the user selected value (when no pre-defined minutes value is passed), or with the pre-defined minutes value, and also creates a companion script, both of which are created at the time the script runs.  
  * The script is then called by the LaunchDaemon at the appointed time and presents a final 5 minute countdown when the Mac is going to reboot. This gives the user a final grace period to close out any open applications and save unsaved work before reboot time occurs.  
+ * If the script is ever run in any way prior to the StartCalendarInterval schedule in the LaunchDaemon, it checks to see if the scheduled reboot time has arrived or has recently passed. If it has not, the script will log this in the companion rdlog.log file and exit silently. This prevents any unwanted premature reboots from occurring if the script gets run accidentally. If the scheduled reboot time has arrived it displays the final 5 minute countdown to the user.
  * If the Mac is rebooted manually prior to the scheduled reboot time, the LaunchDaemon and script are automatically cleaned up from the Mac, thus preventing another (unnecessary) reboot from occuring.  
+ * If the dialog is quit by the user without selecting a value, the longest deferral option is automatically assigned and the LaunchDaemon / script are created and the user is notified of this.  
 
 #####Using the script:
 Basic usage  
@@ -78,6 +80,7 @@ For more details on usage, please read through the script comments.
 #####What it creates:  
 The LaunchDaemon is created in the path: `/Library/LaunchDaemons/com.org.rd.plist`  
 The script is created in the path: `/private/var/rtimer.sh`  
+A log file that captures information about the process is created and updated at `/private/var/log/rdlog.log`
 <br>
 
 ####**create_SelfService_Plug-in.sh**<br>
