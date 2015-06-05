@@ -5,6 +5,7 @@ A collection of scripts I have worked on to be used with the Casper Suite, and i
 
 ###Current scripts
 [Update_Core_Apps.sh](#update_core_appssh)  
+[reboot_scheduler.sh](#reboot_schedulersh)  
 [create_SelfService_Plug-in.sh](#create_selfservice_plug-insh)  
 [install_select_SS_plug-ins.sh](#install_select_ss_plug-inssh) *(Companion script for create_SelfService_Plug-in.sh)*  
 [install_Latest_GoogleChrome-SelfService.sh](#install_latest_googlechrome-selfservicesh)  
@@ -49,7 +50,36 @@ Details on the script are as follows:
 #####To show a help page for the script, in Terminal:  
 `/path/to/script/Update_Core_Apps.sh`  
 <br>
+####**reboot_scheduler.sh**<br>
+**reboot_scheduler.sh** was designed to be used in instances where system updates have been installed silently on a Mac that require a reboot of the Mac.  
+Instead of simply rebooting the Mac immediately, or only allowing a single option for reboot (for ex. "Your Mac will reboot in 5 minutes") which could interrupt a user while they are in the middle of a presentation or some other important business, the script allows you to send up options for the user to schedule the reboot at a later time, or optionally reboot soon.  
+
+#####Requirements:  
+- The latest beta version of cocoaDialog (uses radio button and standard msgbox dialog styles)
+
+#####Synopsis:  
+The script works in two modes:  
+
+1. If no value (integer) in minutes is passed to the script in Parameter 4 when its run, it will send up a dialog with cocoaDialog with pre-defined reboot options that the user can choose from. For example, you may give the user the option of rebooting "2 hours from now" "30 minutes from now" or "5 minutes from now"  
+2. If a value (integer) in minutes is passed to the script in Parameter 4, it will instead auto schedule the reboot accordingly in the future exactly the number of minutes that was passed in the parameter.  
+ * In either case, the schedule is created dynamically with a LaunchDaemon and companion script, both of which are created at the time the script runs.  
+ * The script is then called by the LaunchDaemon at the appointed time and presents a final 5 minute countdown when the Mac is going to reboot. This gives the user a final grace period to close out any open applications and save unsaved work before reboot time occurs.  
+ * If the Mac is rebooted manually prior to the scheduled reboot time, the LaunchDaemon and script are automatically cleaned up from the Mac, thus preventing another (unnecessary) reboot from occuring.  
+
+#####Using the script:
+Basic usage  
+`sudo /path/to/reboot_scheduler.sh`  
+
+When the script is added to a policy, you can optionally add a value in minutes to Paramater 4 ($4) to pass to it at run time.
+You may also edit the values in the script for the reboot time options (currently on lines 75 thru 78)  
+
+For more details on usage, please read through the script comments.  
+
+#####What it creates:  
+The LaunchDaemon is created in the path: `/Library/LaunchDaemons/com.org.rd.plist`  
+The script is created in the path: `/private/var/rtimer.sh`  
 <br>
+
 ####**create_SelfService_Plug-in.sh**<br>
 This script can be used to create Casper Suite Self Service Plug-ins on the fly, without needing to create them first within the JSS, then pulling them down with the management framework. Useful for quick testing when creating new Plug-ins, before actually setting them up within the JSS. Also useful for environments that wish to 'scope' URL Plug-ins and not auto deploy all new Plug-ins to all managed Macs.
 
