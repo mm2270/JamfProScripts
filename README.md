@@ -67,6 +67,7 @@ The script works in two modes:
  * If the script is ever run in any way prior to the StartCalendarInterval schedule in the LaunchDaemon, it checks to see if the scheduled reboot time has arrived or has recently passed. If it has not, the script will log this in the companion rdlog.log file and exit silently. This prevents any unwanted premature reboots from occurring if the script gets run accidentally. If the scheduled reboot time has arrived it displays the final 5 minute countdown to the user.
  * If the Mac is rebooted manually prior to the scheduled reboot time, the LaunchDaemon and script are automatically cleaned up from the Mac, thus preventing another (unnecessary) reboot from occuring.  
  * If the dialog is quit by the user without selecting a value, the longest deferral option is automatically assigned and the LaunchDaemon / script are created and the user is notified of this.  
+ * If no user is logged in at the time the script runs, it will start an immediate reboot of the Mac to satisfy the reboot requirement without needing to schedule it for a later time.  
 
 #####Using the script:
 Basic usage  
@@ -74,6 +75,16 @@ Basic usage
 
 When the script is added to a policy, you can optionally add a value in minutes to Paramater 4 ($4) to pass to it at run time.
 You may also edit the values in the script for the reboot time options (currently on lines 75 thru 78)  
+
+An example usage simulating a policy with a value passed to parameter 4 (using the jamf binary)  
+`sudo jamf runScript -script reboot_scheduler.sh -path /path/to/script/ -p1 120`  
+
+The above would auto schedule a reboot to occur 120 minutes from the runtime of the script, and display an alert showing the exact date and time the reboot has been scheduled to the current user.
+As an example, if the script is run using a value of '120' passed to Parameter 4, and the current date and time is:  
+`June 10, 2015 11:47 PM`  
+the script will create a LaunchDaemon with a CalendarStartInterval setting of:  
+`June 10, 2015 01:47 PM`  
+and display this date and time in the dialog.
 
 For more details on usage, please read through the script comments.  
 
