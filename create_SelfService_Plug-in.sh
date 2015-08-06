@@ -2,9 +2,12 @@
 
 ##	Script:		create_SelfService_Plug-in.sh
 ##	Author:		Mike Morales
-##	Last Change:	2015-01-12
-##		Notes for last change:
-##		Uses sips to check image aspect ratio and pre-convert image (to tmp file) to 128x128 pixels to use for base64 encoding
+##
+##	Change log:
+##	2015-08-06:
+##		Added lines to process several user passed variables to ensure they conform to xml standards
+##	2015-01-12:
+##		Changed to use sips to check image aspect ratio and pre-convert image (to tmp file) to 128x128 pixels to use for base64 encoding
 
 
 function createPlugIn ()
@@ -13,6 +16,12 @@ function createPlugIn ()
 echo "Starting Plug-in creation..."
 echo "Checking for existing Plug-ins..."
 sleep 0.5
+
+## Process some of the passed strings to make sure they conform to xml standards
+URL=$(echo "$URL" | sed -e 's/"/&quot;/g;s/&/&amp;/g;s/>/&gt;/g;s/</&lt;/g' | sed "s/'/&apos;/g")
+title=$(echo "$title" | sed -e 's/"/&quot;/g;s/&/&amp;/g;s/>/&gt;/g;s/</&lt;/g' | sed "s/'/&apos;/g")
+subtitle=$(echo "$subtitle" | sed -e 's/"/&quot;/g;s/&/&amp;/g;s/>/&gt;/g;s/</&lt;/g' | sed "s/'/&apos;/g")
+
 
 if [ -d "/Library/Application Support/JAMF/" ]; then
 	## Check for an existing Self Service Plug-ins directory
