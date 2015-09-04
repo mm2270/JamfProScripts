@@ -5,6 +5,7 @@ A collection of scripts I have worked on to be used with the Casper Suite, and i
 
 ###Current scripts
 [Update_Core_Apps.sh](#update_core_appssh)  
+[create_ARD_computer_list.sh](#create_ard_computer_listsh)  
 [reboot_scheduler.sh](#reboot_schedulersh)  
 [create_SelfService_Plug-in.sh](#create_selfservice_plug-insh)  
 [install_select_SS_plug-ins.sh](#install_select_ss_plug-inssh) *(Companion script for create_SelfService_Plug-in.sh)*  
@@ -50,6 +51,27 @@ Details on the script are as follows:
 #####To show a help page for the script, in Terminal:  
 `/path/to/script/Update_Core_Apps.sh`  
 <br>
+
+####**create_ARD_computer_list.sh**<br>
+**create_ARD_computer_list.sh** was designed to assist with converting a Casper Suite Smart or Static Computer group into an Apple Remote Desktop computer list.  
+The script will present an Applescript dialog with a listing of all computer groups from your JSS to select from. Your selection will be accessed using the JSS API, pulled down into an xml file, then converted into an ARD computer list plist file for import into Apple Remote Desktop.  
+The API account used with this script must have the following read access at a minimum to function:  
+- Computers  
+- Smart Computer Groups  
+- Static Computer Groups  
+
+No "Create", "Update" or "Delete" access needs to be given to the API account to use this. It only reads these objects.
+
+Special note: Because Smart and Static Computer groups don't contain the last reported IP address for computers in them, the script must loop over a list of all JSS computer IDs from the group chosen to get each Mac's IP address for the plist file. Because of this, the script can take several minutes to complete, even with modest sized computer groups. Its not recommended to use this on very large computer groups, such as one that has 1000 or more members in it.  
+
+#####**Basic usage**
+1. Edit the required items in the script for API Username, API Password and JSS URL.  
+2. Save the script and ensure it is executable: `chmod +x /path/to/create_ARD_computer_list.sh`  
+3. Run the script in Terminal or by other means and follow the instructions.  
+
+Feel free to report any issues.  
+<br>
+
 ####**reboot_scheduler.sh**<br>
 **reboot_scheduler.sh** was designed to be used in instances where system updates have been installed silently on a Mac that require a reboot of the Mac.  
 Instead of simply rebooting the Mac immediately, or only allowing a single option for reboot (for ex. "Your Mac will reboot in 5 minutes") which could interrupt a user while they are in the middle of a presentation or some other important business, the script allows you to send up options for the user to schedule the reboot at a later time, or optionally reboot soon.  
