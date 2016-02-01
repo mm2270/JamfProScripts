@@ -2,7 +2,11 @@
 
 ##	Script Name:		Selectable_SoftwareUpdate.sh
 ##	Script Author:		Mike Morales, @mm2270 on JAMFNation
-##	Last Update:		2014-03-26
+##	Last Update:		2016-01-20
+
+##	Last Update:
+##	Included 'Reboot Now' button, when a reboot is required after installed updates,
+##	which waits 4 seconds, then does an immediate reboot when clicked.
 
 ##	Path to cocoaDialog (customize to your own location)
 cdPath="/Library/Application Support/JAMF/bin/cocoaDialog.app/Contents/MacOS/cocoaDialog"
@@ -185,9 +189,27 @@ doneMSG="The installations have completed, but your Mac needs to reboot to final
 Your Mac will automatically reboot in $minToRestart minutes. Begin to save any open work and close applications now."
 
 ##	Display initial message for 30 seconds before starting the progress bar countdown
-"$cdPath" msgbox --title "$orgName Software Update > Updates Complete" \
---text "Updates installed successfully" --informative-text "$doneMSG" \
---button1 "    OK    " --icon-file "$msgIcon" --posY top --width 450 --timeout 30 --timeout-format " "
+userSelection=$("$cdPath" msgbox \
+	--title "$orgName Software Update > Updates Complete" \
+	--text "Updates installed successfully" \
+	--informative-text "$doneMSG" \
+	--button1 "    OK    " \
+	--button2 "Reboot Now" \
+	--icon-file "$msgIcon" \
+	--posY top \
+	--width 450 \
+	--timeout 30 \
+	--timeout-format " ")
+	
+	if [[ "$userSelection" == "1" ]]; then
+		echo "User clicked OK button. Continuing with reboot countdown..."
+	elif [[ "$userSelection" == "2" ]]; then
+		echo "User clicked Reboot Now. Initiating reboot in 4 seconds..."
+		sleep 4
+		/sbin/shutdown -r now
+	else
+		echo "Dialog timed out. Continuing with reboot countdown..."
+	fi
 
 	##	Sub-function to (re)display the progressbar window. Developed to work around the fact that
 	##	CD responds to Cmd+Q and will quit. The script continues the countdown. The sub-function
