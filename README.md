@@ -10,7 +10,7 @@ A collection of scripts I have worked on to be used with the Casper Suite, and i
 [create_SelfService_Plug-in.sh](#create_selfservice_plug-insh)  
 [install_select_SS_plug-ins.sh](#install_select_ss_plug-inssh) *(Companion script for create_SelfService_Plug-in.sh)*  
 [install_Latest_GoogleChrome-SelfService.sh](#install_latest_googlechrome-selfservicesh)  
-[offer2AddIcon-v4.sh](#offer2addicon_v4sh)  
+[offer2AddIcon-v4.sh](#offer2addicon-v4sh)  
 [selectable-SoftwareUpdate.sh](#selectable-softwareupdatesh)  
 [repair_permissions.sh](#repair_permissionssh)  
 [download_jss_scripts.sh](#download_jss_scriptssh)
