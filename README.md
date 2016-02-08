@@ -10,6 +10,7 @@ A collection of scripts I have worked on to be used with the Casper Suite, and i
 [create_SelfService_Plug-in.sh](#create_selfservice_plug-insh)  
 [install_select_SS_plug-ins.sh](#install_select_ss_plug-inssh) *(Companion script for create_SelfService_Plug-in.sh)*  
 [install_Latest_GoogleChrome-SelfService.sh](#install_latest_googlechrome-selfservicesh)  
+[offer2AddIcon-v4.sh](#offer2addicon_v4sh)  
 [selectable-SoftwareUpdate.sh](#selectable-softwareupdatesh)  
 [repair_permissions.sh](#repair_permissionssh)  
 [download_jss_scripts.sh](#download_jss_scriptssh)
@@ -165,6 +166,29 @@ Progress is shown when appropriate. In all cases, the final success dialogs will
 
 Requirements:
 - Current beta release of cocoaDialog to be installed on the target Mac  
+<br>
+
+####**offer2AddIcon-v4.sh**<br>
+This script was originally written in 2012 and subsequently updated in 2013, then again in 2014. Its being published here due to some interest in the script expressed by others who may be looking for a similar solution.  
+
+The script is designed to be used in conjunction with Casper Suite Self Service policies that install an application which can be added to a user's Dock. The script should get run in an "After" state. Instead of using the built in Dock icon functionality in a policy, which forces the icon in the user's Dock, the script will utilize cocoaDialog or jamfHelper to prompt the client if they would like the icon for the just installed application in their Dock.  
+
+**Requirements for the script:**  
+- Parameter 4 (Application Name only)  
+- Parameter 5 (Dock icon ID from the JSS - used as a backup if dockutil is not installed)  
+- Parameter 6 (Full application path for the icon to be added)  
+
+**Optional items:**  
+- Parameter 7 (Add "after" icon - determines if the icon should try to be added after an existing icon in the Dock)  
+- dockutil installed on the Mac - this provides the best experience, but its possible to use just the built in Casper Suite Dock icon ID and the jamf binary  
+
+**How it works**  
+The script does some basic checking before sending up a dialog.  
+First, it checks to see if the target application (passed to the script in Parameter 6 ($6) is present, then checks to see if the icon already exists in the current user's Dock.plist. If its already present it will simply display a dialog that the installation (presumably an update to an existing installation) has completed.  
+If the icon *isn't* present in their Dock, it will offer to add the icon for them. The user can click **Yes** or **No**. If they click "No", the script exits and leaves their Dock as is. If they click "Yes", it will attempt to add the icon for the application to their Dock. If dockutil is installed and the path to the binary has been set up within the script, it will use that binary to add the Dock icon. If dockutil isn't installed or the script cannot find it, it falls back to using the jamf binary's update Dock functionality. This is where Parameter 6 comes in, since it will use the Dock icon ID from the JSS for this.  
+Paramater 7 is an optional item that can be passed to the script which will use dockutil's ability to add an icon after an existing one in the Dock. For example, if using the script with a Firefox or Chrome installation policy, you may want to pass "Safari" to Parameter 7, which will tell dockutil to try to add the icon after Safari if its present in the Dock. In cases where the icon passed to Parameter 7 isn't in the Dock, it defaults to adding the icon at the end of the Dock.  
+
+I developed this script because I felt that a user's Dock is a personal item. Everyone manages their Dock differently. I didn't feel comfortable with forcing an icon to a user's Dock without giving them to the option to bypass it. However, we did want to give clients the ability to automatically add the newly installed application to their Dock if they wanted it. The Casper Suite doesn't have built in functionality to prompt the user for a choice for Dock icons unless its run as a separate policy along with User Interaction options set up.
 
 <br>  
 ####**selectable-SoftwareUpdate.sh**<br>
