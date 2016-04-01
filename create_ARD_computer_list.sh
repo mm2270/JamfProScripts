@@ -5,13 +5,13 @@
 ## Last Modified:	2015-Sept-04
 
 ## Special Notes:	This script was designed to work with a Casper Suite server's API functions,
-                  	to create a valid Apple Remote Desktop computer group plist file that can be
-                  	imported into the application.
-                  	The script allows you to choose a Smart or Static Computer Group from your JSS
-                  	to use for the conversion process into an ARD plist.
+##                  	to create a valid Apple Remote Desktop computer group plist file that can be
+##                  	imported into the application.
+##                  	The script allows you to choose a Smart or Static Computer Group from your JSS
+##                  	to use for the conversion process into an ARD plist.
 
 ## How to use:		Edit the API_USER, API_PASS and JSS_URL variables below to match your environment's.
-                  	Save the script, ensure it is executable, then run it from Terminal and follow the instructions.
+##                  	Save the script, ensure it is executable, then run it from Terminal and follow the instructions.
 
 
 ## VARIABLES
