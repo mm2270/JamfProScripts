@@ -141,7 +141,7 @@ fi
 ## Begin script download process
 echo "Step 1:	Gathering all Script IDs from the JSS..."
 ## Generate a list of all Script IDs we can pull from the JSS using the API
-allScriptIDs=$( curl -skfu "${apiUser}:${apiPass}" "${jssScriptsURL}" | xmllint --format - | awk -F'>|<' '/<id>/{print $3}' | sort -n )
+allScriptIDs=$( curl -skfu "${apiUser}:${apiPass}" -H "Accept: application/xml" "${jssScriptsURL}" | xmllint --format - | awk -F'>|<' '/<id>/{print $3}' | sort -n )
 
 ## Now read through each ID gathered and get specific information on each Script from the JSS
 echo "Step 2:	Pulling down each Script from the JSS..."
@@ -149,9 +149,9 @@ echo "Step 2:	Pulling down each Script from the JSS..."
 downloadCount=0
 while read ID; do
 	## Get the Script name from its JSS ID
-	script_Name=$( curl -sku "${apiUser}:${apiPass}" "${jssScriptsURL}/id/${ID}" | xmllint --format - | awk -F'>|<' '/<name>/{print $3}' )
+	script_Name=$( curl -sku "${apiUser}:${apiPass}" -H "Accept: application/xml" "${jssScriptsURL}/id/${ID}" | xmllint --format - | awk -F'>|<' '/<name>/{print $3}' )
 	## Get the actual script contents from the API record for the script
-	script_Content=$( curl -sku "${apiUser}:${apiPass}" "${jssScriptsURL}/id/${ID}" | xmllint --format - | awk '/<script_contents>/,/<\/script_contents>/{print}' | sed -e 's/<script_contents>//g;s/<\/script_contents>//g;s/^ *//' )
+	script_Content=$( curl -sku "${apiUser}:${apiPass}"-H "Accept: application/xml" "${jssScriptsURL}/id/${ID}" | xmllint --format - | awk '/<script_contents>/,/<\/script_contents>/{print}' | sed -e 's/<script_contents>//g;s/<\/script_contents>//g;s/^ *//' )
 	script_Ext=$( echo "$script_Name" | awk -F. '{print $NF}' )
 	
 	echo "DEBUG: Script name is: $script_Name"
