@@ -3,7 +3,7 @@ CasperSuiteScripts
 
 A collection of scripts I have worked on to be used with the Casper Suite, and in some cases, which can be used with other Mac management tools.
 
-###Current scripts
+### Current scripts
 [Update_Core_Apps.sh](#update_core_appssh)  
 [create_ARD_computer_list.sh](#create_ard_computer_listsh)  
 [reboot_scheduler.sh](#reboot_schedulersh)  
@@ -15,7 +15,7 @@ A collection of scripts I have worked on to be used with the Casper Suite, and i
 [repair_permissions.sh](#repair_permissionssh)  
 [download_jss_scripts.sh](#download_jss_scriptssh)
 
-####**Update_Core_Apps.sh**<br>
+#### **Update_Core_Apps.sh**<br>
 The Update_Core_Apps script can be used to update many common free applications and Plug-ins. Despite the word "Update" in its name, it can also be used to install most of these applications and Plug-ins new on a target Mac.
 
 Details on the script are as follows:
@@ -43,17 +43,17 @@ Details on the script are as follows:
   * Strings are case insensitive.
 - The script replaces both the **installLatestFlashPlayer-v1.sh** and **install_Latest_AdobeReader.sh** scripts.
 
-#####Basic usage  
+##### Basic usage  
 1. To test the script from Terminal on a Casper Suite managed Mac:  
 `sudo jamf runScript -script Update_Core_Apps.sh -path /path/to/script/ -p1 "app or plugin name"` _(mandatory)_ `-p2 "any string to enable Self Service"` _(optional)_  
 
 2. When adding the script to a Casper Suite policy, add a string to Parameter 4 and optionally Paramater 5.
 
-#####To show a help page for the script, in Terminal:  
+##### To show a help page for the script, in Terminal:  
 `/path/to/script/Update_Core_Apps.sh`  
 <br>
 
-####**create_ARD_computer_list.sh**<br>
+#### **create_ARD_computer_list.sh**<br>
 **create_ARD_computer_list.sh** was designed to assist with converting a Casper Suite Smart or Static Computer group into an Apple Remote Desktop computer list.  
 The script will present an Applescript dialog with a listing of all computer groups from your JSS to select from. Your selection will be accessed using the JSS API, pulled down into an xml file, then converted into an ARD computer list plist file for import into Apple Remote Desktop.  
 The API account used with this script must have the following read access at a minimum to function:  
@@ -65,7 +65,7 @@ No "Create", "Update" or "Delete" access needs to be given to the API account to
 
 Special note: Because Smart and Static Computer groups don't contain the last reported IP address for computers in them, the script must loop over a list of all JSS computer IDs from the group chosen to get each Mac's IP address for the plist file. Because of this, the script can take several minutes to complete, even with modest sized computer groups. Its not recommended to use this on very large computer groups, such as one that has 1000 or more members in it.  
 
-#####**Basic usage**
+##### **Basic usage**
 1. Edit the required items in the script for API Username, API Password and JSS URL.  
 2. Save the script and ensure it is executable: `chmod +x /path/to/create_ARD_computer_list.sh`  
 3. Run the script in Terminal or by other means and follow the instructions.  
@@ -73,14 +73,14 @@ Special note: Because Smart and Static Computer groups don't contain the last re
 Feel free to report any issues.  
 <br>
 
-####**reboot_scheduler.sh**<br>
+#### **reboot_scheduler.sh**<br>
 **reboot_scheduler.sh** was designed to be used in instances where system updates have been installed silently on a Mac that require a reboot of the Mac.  
 Instead of simply rebooting the Mac immediately, or only allowing a single option for reboot (for ex. "Your Mac will reboot in 5 minutes") which could interrupt a user while they are in the middle of a presentation or some other important business, the script allows you to send up options for the user to schedule the reboot at a later time, or optionally reboot soon.  
 
-#####Requirements:  
+##### Requirements:  
 - The latest beta version of cocoaDialog (uses radio button and standard msgbox dialog styles)
 
-#####Synopsis:  
+##### Synopsis:  
 The script works in two modes:  
 
 1. If no value (integer) in minutes is passed to the script in Parameter 4 when its run, it will send up a dialog with cocoaDialog with pre-defined reboot options that the user can choose from. For example, you may give the user the option of rebooting "2 hours from now" "30 minutes from now" or "5 minutes from now"  
@@ -92,7 +92,7 @@ The script works in two modes:
  * If the dialog is quit by the user without selecting a value, the longest deferral option is automatically assigned and the LaunchDaemon / script are created and the user is notified of this.  
  * If no user is logged in at the time the script runs, it will start an immediate reboot of the Mac to satisfy the reboot requirement without needing to schedule it for a later time.  
 
-#####Using the script:
+##### Using the script:
 Basic usage  
 `sudo /path/to/reboot_scheduler.sh`  
 
@@ -111,13 +111,13 @@ and display this date and time in the dialog.
 
 For more details on usage, please read through the script comments.  
 
-#####What it creates:  
+##### What it creates:  
 The LaunchDaemon is created in the path: `/Library/LaunchDaemons/com.org.rd.plist`  
 The script is created in the path: `/private/var/rtimer.sh`  
 A log file that captures information about the process is created and updated at `/private/var/log/rdlog.log`
 <br>
 
-####**create_SelfService_Plug-in.sh**<br>
+#### **create_SelfService_Plug-in.sh**<br>
 This script can be used to create Casper Suite Self Service Plug-ins on the fly, without needing to create them first within the JSS, then pulling them down with the management framework. Useful for quick testing when creating new Plug-ins, before actually setting them up within the JSS. Also useful for environments that wish to 'scope' URL Plug-ins and not auto deploy all new Plug-ins to all managed Macs.
 
 Details on the script:  
@@ -132,12 +132,12 @@ Details on the script:
  * If used on a non managed Mac, it will save the resulting plug-in plist to your Desktop
 7. The script notes the resulting Plug-in's ID (same as file name) and save path, so it should be easy to locate and wrap into a package later for deployment.  
 
-#####Basic usage
+##### Basic usage
 `sudo /path/to/create_SelfService_Plug-in.sh`  
 Enter your administrator password, and follow the on screen instructions
 <br>
 <br>
-####**install_select_SS_plug-ins.sh**<br>
+#### **install_select_SS_plug-ins.sh**<br>
 This script is a companion script to [create_SelfService_Plug-in.sh](#create_selfservice_plug-insh), and is intended to be used from a Casper Suite Self Service policy to allow end users to select the URL plug-ins they wish to install.  
 
 To effectively use this script, the following workflow is recommended:  
@@ -156,7 +156,7 @@ The choices made by the user are captured and only the selected URL plug-ins are
 <br>
 
 
-####**install_Latest_GoogleChrome-SelfService.sh**<br>
+#### **install_Latest_GoogleChrome-SelfService.sh**<br>
 This script is intended to be used within Self Service. The script will operate in one of three ways, dynamically determined based on conditions.  
 - If the Google Chrome browser is already installed on the Mac in the standard `/Applications/` path, it will attempt to locate the Google Software Update mechanism and run it as the user to check for, and install, any updates to Chrome. A final dialog will display if the browser was updated, or if it was already up to date.  
 - If it cannot locate the Google Software Update tools on the Mac, it will offer to download the latest release and install it.  
@@ -168,7 +168,7 @@ Requirements:
 - Current beta release of cocoaDialog to be installed on the target Mac  
 <br>
 
-####**offer2AddIcon-v4.sh**<br>
+#### **offer2AddIcon-v4.sh**<br>
 This script was originally written in 2012 and subsequently updated in 2013, then again in 2014. Its being published here due to some interest in the script expressed by others who may be looking for a similar solution.  
 
 The script is designed to be used in conjunction with Casper Suite Self Service policies that install an application which can be added to a user's Dock. The script should get run in an "After" state. Instead of using the built in Dock icon functionality in a policy, which forces the icon in the user's Dock, the script will utilize cocoaDialog or jamfHelper to prompt the client if they would like the icon for the just installed application in their Dock.  
@@ -191,13 +191,13 @@ Paramater 7 is an optional item that can be passed to the script which will use 
 I developed this script because I felt that a user's Dock is a personal item. Everyone manages their Dock differently. I didn't feel comfortable with forcing an icon to a user's Dock without giving them to the option to bypass it. However, we did want to give clients the ability to automatically add the newly installed application to their Dock if they wanted it. The Casper Suite doesn't have built in functionality to prompt the user for a choice for Dock icons unless its run as a separate policy along with User Interaction options set up.
 
 <br>  
-####**selectable-SoftwareUpdate.sh**<br>
+#### **selectable-SoftwareUpdate.sh**<br>
 - Requires the current beta release of cocoaDialog to be installed on the target Mac.
 - Displays a checkbox dialog with available Software Updates to be installed.
 - Provides feedback on installations as they run with a moving progress bar.
 
 <br>
-####**repair_permissions.sh**<br>
+#### **repair_permissions.sh**<br>
 - Requires the current beta release of cocoaDialog to be installed on the target Mac.
 - Optionally displays a 'preamble' message to the user before running the disk permissions repair.
 - Optionally allows the user to 'opt out' of future preamble messages with a checkbox.
@@ -210,26 +210,26 @@ Please read the notes contained within the script for instructions on how to use
 Currently this script does not use Casper Suite script parameters. If I receive enough feedback on wanting this functionality, I will add it in. In the interim, feel free to modify the script to use passed parameters for some of the options.  
 
 <br>
-####**download_jss_scripts.sh**<br>
+#### **download_jss_scripts.sh**<br>
 This script, which is designed to be used with a Casper Suite JSS version 9.x, can be used to download all scripts located on the JSS into a directory. Each script is downloaded with the display name as shown for it in the JSS. The script contents are cleaned after saving, to remove any web formatted characters which would prevent the script from being usable.
 
-#####Basic usage:  
+##### Basic usage:  
 The script can be run directly in Terminal, or via the jamf binary. To use it you must pass an API read username and password to it to use for API commands. A third parameter that can be passed is the JSS URL. This is optional if running the script from a Mac that is currently enrolled in the target JSS.  
 
-#####Examples:  
+##### Examples:  
 `sudo jamf runScript -script download_jss_scripts.sh -path /Users/me/Desktop/ -p1 apiuser -p2 apipassword [optional] -p3 https://my.jss.org:8443`  
 
 Or  
 
 `sudo /Users/me/Desktop/download_jss_scripts.sh -a apiuser -p apipassword -s https://my.jss.org:8443`  
 
-#####To show a help page for the script, in Terminal:  
+##### To show a help page for the script, in Terminal:  
 `/path/to/script/download_jss_scripts.sh -h`  
 <br>
 <br>
 
-####**installLatestFlashPlayer-v1.sh**<br>
+#### **installLatestFlashPlayer-v1.sh**<br>
 (This script has been replaced by Update_Core_Apps.sh)
 
-####**install_Latest_AdobeReader.sh**   (_New_)<br>
+#### **install_Latest_AdobeReader.sh**   (_New_)<br>
 (This script has been replaced by Update_Core_Apps.sh)
