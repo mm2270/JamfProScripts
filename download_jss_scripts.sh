@@ -3,10 +3,13 @@
 ## Script name:		download_jss_scripts.sh
 ## Author:		Mike Morales (@mm2270 on JAMFNation)
 ##			https://jamfnation.jamfsoftware.com/viewProfile.html?userID=1927
-## Last change:		2015-06-01
+## Last change:		2018-Jan-15
+## Last change description:
+##			Placed curl header in front of account credentials to prevent errors when downloading script contents
+##			Replaced xmllint with xpath string on line 156 to obtain full script contents
 
 ## Description:		Script to download all JSS scripts from a
-##			Casper Suite version 9.x JSS. For more detailed information,
+##			Casper Suite version 9.x or version 10.x Jamf Pro server. For more detailed information,
 ##			run the script in Terminal with the -h flag
 
 ## The following section contains the only variables that should be manually edited in
@@ -28,7 +31,7 @@ scriptDownloadDir="/Library/Application Support/JAMF/JSS_Scripts"
 ################################ DO NOT EDIT BELOW THIS LINE ################################
 
 script=$(basename $0)
-directory="$( cd "$( dirname "$0" )" && pwd )"
+directory="$(cd "$(dirname "$0")" && pwd)"
 
 ## Help / Usage function
 usage ()
@@ -108,7 +111,7 @@ fi
 
 ## If no server address was passed to the script, get it from the Mac's com.jamfsoftware.jamf.plist
 if [[ -z "$jssURL" ]]; then
-	jssURL=$( /usr/bin/defaults read /Library/Preferences/com.jamfsoftware.jamf.plist jss_url 2> /dev/null | sed 's/\/$//' )
+	jssURL=$(/usr/bin/defaults read /Library/Preferences/com.jamfsoftware.jamf.plist jss_url 2> /dev/null | sed 's/\/$//')
 	if [[ -z "$jssURL" ]]; then
 		echo "JSS URL = $jssURL"
 		echo "Oops! We couldn't get the JSS URL from this Mac, and none was passed to the script"
@@ -118,7 +121,7 @@ if [[ -z "$jssURL" ]]; then
 	fi
 else
 	## Make sure to remove any trailing / in the passed parameter for the JSS URL
-	jssURL=$( echo "$jssURL" | sed 's/\/$//' )
+	jssURL="${jssURL%/}"
 fi
 
 ## Set up the JSS Scripts API URL
@@ -141,7 +144,7 @@ fi
 ## Begin script download process
 echo "Step 1:	Gathering all Script IDs from the JSS..."
 ## Generate a list of all Script IDs we can pull from the JSS using the API
-allScriptIDs=$( curl -skfu "${apiUser}:${apiPass}" -H "Accept: application/xml" "${jssScriptsURL}" | xmllint --format - | awk -F'>|<' '/<id>/{print $3}' | sort -n )
+allScriptIDs=$(curl -H "Accept: text/xml" -skfu "${apiUser}:${apiPass}" "${jssScriptsURL}" | xmllint --format - | awk -F'>|<' '/<id>/{print $3}' | sort -n)
 
 ## Now read through each ID gathered and get specific information on each Script from the JSS
 echo "Step 2:	Pulling down each Script from the JSS..."
@@ -149,21 +152,20 @@ echo "Step 2:	Pulling down each Script from the JSS..."
 downloadCount=0
 while read ID; do
 	## Get the Script name from its JSS ID
-	script_Name=$( curl -sku "${apiUser}:${apiPass}" -H "Accept: application/xml" "${jssScriptsURL}/id/${ID}" | xmllint --format - | awk -F'>|<' '/<name>/{print $3}' )
+	script_Name=$(curl -H "Accept: application/xml" -sku "${apiUser}:${apiPass}" "${jssScriptsURL}/id/${ID}" | xmllint --format - | awk -F'>|<' '/<name>/{print $3}')
 	## Get the actual script contents from the API record for the script
-	script_Content=$( curl -sku "${apiUser}:${apiPass}"-H "Accept: application/xml" "${jssScriptsURL}/id/${ID}" | xmllint --format - | awk '/<script_contents>/,/<\/script_contents>/{print}' | sed -e 's/<script_contents>//g;s/<\/script_contents>//g;s/^ *//' )
-	script_Ext=$( echo "$script_Name" | awk -F. '{print $NF}' )
+	script_Content=$(curl -H "Accept: application/xml" -sku "${apiUser}:${apiPass}" "${jssScriptsURL}/id/${ID}" | xpath '/script/script_contents/text()')
+	script_Ext=$(echo "$script_Name" | awk -F. '{print $NF}')
 	
-	echo "DEBUG: Script name is: $script_Name"
-	echo "DEBUG: Script extension is: $script_Ext"
+	echo "Script name is: $script_Name"
 	
 	if [ "$script_Ext" == "$script_Name" ]; then
 		## Get the first line, which should be a shebang of some kind
-		firstLine=$( echo "${script_Content}" | head -1 )
+		firstLine=$(echo "${script_Content}" | head -1)
 		## If it looks like the first line begins with a shebang...
-		if [[ $( echo "$firstLine" | grep "^#\!" ) ]]; then
+		if [[ $(echo "$firstLine" | grep "^#\!" ) ]]; then
 			## ...grab the script's interpreter
-			shellEnv=$( echo "$firstLine" | awk -F'/' '{print $NF}' | perl -pi -e 'tr/\cM//d;')
+			shellEnv=$(echo "$firstLine" | awk -F'/' '{print $NF}' | perl -pi -e 'tr/\cM//d;')
 			## If the script's interpreter ends in sh (.sh, .bash, .ksh, csh, etc)...
 			if [[ "$shellEnv" =~ sh$ ]]; then
 				## ...set the script extension to .sh
