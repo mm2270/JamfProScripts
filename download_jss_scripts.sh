@@ -43,7 +43,7 @@ SYNOPSIS
 	sudo jamf runScript -script "script.sh" -path "/path/to/" -p1 "api_user" -p2 "api_password" -p3 "server"
 
 COMPATIBILITY:
-	Casper Suite version 9.x
+	Casper Suite version 9.x and 10.x
 	
 OPTIONS:
 	-h	Show this usage screen
@@ -165,7 +165,7 @@ while read ID; do
 		## If it looks like the first line begins with a shebang...
 		if [[ $(echo "$firstLine" | grep "^#\!" ) ]]; then
 			## ...grab the script's interpreter
-			shellEnv=$(echo "$firstLine" | awk -F'/' '{print $NF}' | perl -pi -e 'tr/\cM//d;')
+			shellEnv=$(echo "$firstLine" | awk -F'/' '{print $NF}' | perl -p -e 'tr/\cM//d;')
 			## If the script's interpreter ends in sh (.sh, .bash, .ksh, csh, etc)...
 			if [[ "$shellEnv" =~ sh$ ]]; then
 				## ...set the script extension to .sh
@@ -193,19 +193,15 @@ done < <(echo "${allScriptIDs}")
 echo "Finished downloading all scripts from the JSS"
 
 echo "Step 3:	Cleaning up script file contents...
-	Adding ea_display_name line to end of each file (if needed)...
 	Cleaning up ^M carriage returns in script contents...
 	Setting executable flag for all script files..."
 
 ## Loop through all downloaded scripts, stripping out problem characters and adding the ea_display_name line
 while read downloadedScript; do
-	scriptBaseName="${downloadedScript%.*}"
-	## Replace '&lt' and '&gt' with proper '<' and '>' symbols in script contents
-	sed -i '' 's/&lt;/</g;s/&gt;/>/g' "${scriptDownloadDir}/${downloadedScript}"
-	## Replace '&amp' with proper '&' symbol in script contents
-	sed -i '' 's/&amp;/\&/g' "${scriptDownloadDir}/${downloadedScript}"
 	## Remove all Windows carriage returns (^M) from the script contents
 	perl -pi -e 'tr/\cM//d;' "${scriptDownloadDir}/${downloadedScript}"
+	URIDecodedScript=$(cat "${scriptDownloadDir}/${downloadedScript}" | perl -MHTML::Entities -pe 'decode_entities($_);')
+	echo "$URIDecodedScript" > "${scriptDownloadDir}/${downloadedScript}"
 	## Make sure all the scripts have the executable flag set for them
 	chmod +x "${scriptDownloadDir}/${downloadedScript}"
 done < <(ls -p "${scriptDownloadDir}" | grep -v /)
