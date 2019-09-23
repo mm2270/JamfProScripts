@@ -80,7 +80,7 @@ exit
 }
 
 ## Run loop to check for passed args on the command line
-while getopts ha:p:s option; do
+while getopts ha:p:s: option; do
 	case "${option}" in
 		a) apiUser=${OPTARG};;
 		p) apiPass=${OPTARG};;
