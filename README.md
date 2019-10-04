@@ -1,7 +1,7 @@
-CasperSuiteScripts
+JamfProScripts
 ==================
 
-A collection of scripts I have worked on to be used with the Casper Suite, and in some cases, which can be used with other Mac management tools.
+A collection of scripts I have worked on to be used with Jamf Pro (formerly 'Casper Suite'), and in some cases, which can be used with other Mac management tools.
 
 ### Current scripts
 [Update_Core_Apps.sh](#update_core_appssh)  
