@@ -4,7 +4,7 @@ JamfProScripts
 A collection of scripts I have worked on to be used with Jamf Pro (formerly 'Casper Suite'), and in some cases, which can be used with other Mac management tools.
 
 ### Current scripts
-[Update_Core_Apps.sh] - deprecated 
+[Update_Core_Apps.sh] - deprecated  
 [create_ARD_computer_list.sh](#create_ard_computer_listsh)  
 [reboot_scheduler.sh](#reboot_schedulersh)  
 [create_SelfService_Plug-in.sh](#create_selfservice_plug-insh)  
