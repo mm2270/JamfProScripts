@@ -4,7 +4,7 @@ JamfProScripts
 A collection of scripts I have worked on to be used with Jamf Pro (formerly 'Casper Suite'), and in some cases, which can be used with other Mac management tools.
 
 ### Current scripts
-[Update_Core_Apps.sh](#update_core_appssh)  
+[Update_Core_Apps.sh] - deprecated 
 [create_ARD_computer_list.sh](#create_ard_computer_listsh)  
 [reboot_scheduler.sh](#reboot_schedulersh)  
 [create_SelfService_Plug-in.sh](#create_selfservice_plug-insh)  
@@ -16,6 +16,7 @@ A collection of scripts I have worked on to be used with Jamf Pro (formerly 'Cas
 [download_jss_scripts.sh](#download_jss_scriptssh)
 
 #### **Update_Core_Apps.sh**<br>
+**IMPORTANT: This script has been depreciated and is no longer being maintained. Most of it will not work on current versions of macOS or is no longer relevant. Use at your own risk!**
 The Update_Core_Apps script can be used to update many common free applications and Plug-ins. Despite the word "Update" in its name, it can also be used to install most of these applications and Plug-ins new on a target Mac.
 
 Details on the script are as follows:
