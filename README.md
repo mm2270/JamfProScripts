@@ -9,6 +9,7 @@ A collection of scripts I have worked on to be used with Jamf Pro (formerly 'Cas
 [create_SelfService_Plug-in.sh](#create_selfservice_plug-insh)  
 [install_select_SS_plug-ins.sh](#install_select_ss_plug-inssh) *(Companion script for create_SelfService_Plug-in.sh)*  
 [offer2AddIcon-v4.sh](#offer2addicon-v4sh)  
+[post_restart_recon_control.sh](#post_restart_recon_controlsh)  
 [selectable-SoftwareUpdate.sh](#selectable-softwareupdatesh)  
 [download_jss_scripts.sh](#download_jss_scriptssh)
 
@@ -143,6 +144,38 @@ Paramater 7 is an optional item that can be passed to the script which will use 
 I developed this script because I felt that a user's Dock is a personal item. Everyone manages their Dock differently. I didn't feel comfortable with forcing an icon to a user's Dock without giving them to the option to bypass it. However, we did want to give clients the ability to automatically add the newly installed application to their Dock if they wanted it. The Casper Suite doesn't have built in functionality to prompt the user for a choice for Dock icons unless its run as a separate policy along with User Interaction options set up.
 
 <br>  
+
+#### **post_restart_recon_control.sh**<br>
+
+Purpose: to deploy (create) a LaunchDaemon and companion local script to a Mac that can be called into action later thru the use of a control plist file
+
+#### How it works:  
+- A local script and LaunchDaemon are both created using the included information in this script.  
+- The scripts name is set to "postrestart.recon.sh" and is created in /private/var/  
+- It is partially customized at the time of creation by using the 2 variables in the script, 'yourOrg' and 'maxAttempts'  
+- The LaunchDaemon's identifier is partially customized on creation using the 'yourOrg' variable within the script  
+- The LaunchDaemon is not loaded after creation (it will load automatically on the next reboot)  
+
+
+#### How the post reboot recon process works once in place:
+- The LaunchDaemon calls the script on initial run (only runs once), which typically means after a restart.  
+- The script looks for a local plist file (/Library/Preferences/com.$yourOrg.postrestart.reconcontrol.plist) The plist has a simple boolean value for a post reboot recon.  
+- If the value is set to TRUE or 1, the script will attempt to connect to the machine's Jamf Pro server and perform a recon. (See point 4 for alternate response)  
+- It will loop up to the max times specified by the `maxAttempts` variable in the initial creation script (default is 30), pausing 1 second between each attempt while trying to connect to the Jamf Pro server. If it cannot connect in the maximum number of attempts, it exits.  
+- If connection is successful, the recon is performed and the plist value is changed to FALSE or 0.  
+- If the plist does not exist, the script performs the same steps as above, a recon is performed and then creating a new plist and setting the value to FALSE or 0.  
+
+After initial deployment, and first use, the LaunchDaemon remains active, and the LaunchDaemon and script remain on the computer. They only spring into action if the control plist is modified through some other means, such as a command run at the completion of a Jamf Pro policy.  
+
+#### Usage:
+The plist value can be changed with a simple shell command added to a policy to set the plist value to TRUE, which means a recon will be attempted after the next restart.  
+
+Example of shell command to enable a post reboot recon (entered into the EXECUTE COMMAND field in a Jamf Pro policy):  
+   `/usr/bin/defaults write /Library/Preferences/com.acme.postrestart.reconcontrol.plist PerformRecon -bool TRUE`
+
+Note: the 'acme' portion of the plist name must be changed to the shortname of your organization entered in the 'yourOrg' value in the script
+<br>
+
 
 #### **selectable-SoftwareUpdate.sh**<br>
 
