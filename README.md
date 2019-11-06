@@ -4,55 +4,17 @@ JamfProScripts
 A collection of scripts I have worked on to be used with Jamf Pro (formerly 'Casper Suite'), and in some cases, which can be used with other Mac management tools.
 
 ### Current scripts
-[Update_Core_Apps.sh] - deprecated  
 [create_ARD_computer_list.sh](#create_ard_computer_listsh)  
 [reboot_scheduler.sh](#reboot_schedulersh)  
 [create_SelfService_Plug-in.sh](#create_selfservice_plug-insh)  
 [install_select_SS_plug-ins.sh](#install_select_ss_plug-inssh) *(Companion script for create_SelfService_Plug-in.sh)*  
-[install_Latest_GoogleChrome-SelfService.sh](#install_latest_googlechrome-selfservicesh)  
 [offer2AddIcon-v4.sh](#offer2addicon-v4sh)  
 [selectable-SoftwareUpdate.sh](#selectable-softwareupdatesh)  
-[repair_permissions.sh](#repair_permissionssh)  
 [download_jss_scripts.sh](#download_jss_scriptssh)
 
-#### **Update_Core_Apps.sh**<br>
-**IMPORTANT: This script has been depreciated and is no longer being maintained. Most of it will not work on current versions of macOS or is no longer relevant. Use at your own risk!**
-The Update_Core_Apps script can be used to update many common free applications and Plug-ins. Despite the word "Update" in its name, it can also be used to install most of these applications and Plug-ins new on a target Mac.
-
-Details on the script are as follows:
-- Requires the current beta release of cocoaDialog to be installed on the target Mac if using Self Service mode (see below)
-- Can update any of the following applications and plug-ins:
-  * **Adobe Reader**
-  * **Adobe Flash Player**
-  * **Cyberduck**
-  * **Dropbox**
-  * **Firefox**
-  * **Firefox ESR**
-  * **Flip Player** (free version)
-  * **Microsoft Lync** (updates only)
-  * **Microsoft Office 2011** (updates only)
-  * **Oracle Java**
-  * **Silverlight**
-  * **VLC**  
-  
-- Can be used in a "silent" mode to update apps/Plug-ins silently on a target Mac, or "Self Service" mode to prompt an end user to install an update and show them both download and install progress, new version information, and success or failure notifications.
-- Has built in version checking against installed applications (if its installed), by comparing it to the latest release from the vendor. The version checking can handle odd version naming conventions, so that it ensures it is only "upgrading" a client, not downgrading it.
-- Office 2011 updates utilize a noquit.xml file to suppress the built in quit apps function of these updates. This allows these updates to install either silently, or via Self Service, without forcing the client to shut down the open applications. In both silent and Self Service modes, a dialog will alert the client of any applications that were open that should be quit and relaunched after installation.
-- The script accepts two Parameters passed to it from a Casper Suite policy:
-  * Parameter 4 ($4) is mandatory, and accepts a number of different strings for the app or Plug-in to check for updates. (For a full listing of acceptable strings, see how to display the help page for the script below).
-  * Parameter 5 ($5) is optional, and can accept any string to enable Self Service mode.
-  * Strings are case insensitive.
-- The script replaces both the **installLatestFlashPlayer-v1.sh** and **install_Latest_AdobeReader.sh** scripts.
-
-##### Basic usage  
-1. To test the script from Terminal on a Casper Suite managed Mac:  
-`sudo jamf runScript -script Update_Core_Apps.sh -path /path/to/script/ -p1 "app or plugin name"` _(mandatory)_ `-p2 "any string to enable Self Service"` _(optional)_  
-
-2. When adding the script to a Casper Suite policy, add a string to Parameter 4 and optionally Paramater 5.
-
-##### To show a help page for the script, in Terminal:  
-`/path/to/script/Update_Core_Apps.sh`  
-<br>
+[Update_Core_Apps.sh] - deprecated  
+[install_Latest_GoogleChrome-SelfService.sh] - deprecated  
+[repair_permissions.sh] - deprecated  
 
 #### **create_ARD_computer_list.sh**<br>
 **create_ARD_computer_list.sh** was designed to assist with converting a Casper Suite Smart or Static Computer group into an Apple Remote Desktop computer list.  
@@ -157,18 +119,6 @@ The choices made by the user are captured and only the selected URL plug-ins are
 <br>
 
 
-#### **install_Latest_GoogleChrome-SelfService.sh**<br>
-This script is intended to be used within Self Service. The script will operate in one of three ways, dynamically determined based on conditions.  
-- If the Google Chrome browser is already installed on the Mac in the standard `/Applications/` path, it will attempt to locate the Google Software Update mechanism and run it as the user to check for, and install, any updates to Chrome. A final dialog will display if the browser was updated, or if it was already up to date.  
-- If it cannot locate the Google Software Update tools on the Mac, it will offer to download the latest release and install it.  
-- If Google Chrome is not installed or not located in `/Applications/`, it will offer to download the latest release and install it.  
-
-Progress is shown when appropriate. In all cases, the final success dialogs will display the installed or updated version of Google Chrome to the user running the policy.  
-
-Requirements:
-- Current beta release of cocoaDialog to be installed on the target Mac  
-<br>
-
 #### **offer2AddIcon-v4.sh**<br>
 This script was originally written in 2012 and subsequently updated in 2013, then again in 2014. Its being published here due to some interest in the script expressed by others who may be looking for a similar solution.  
 
@@ -197,18 +147,6 @@ I developed this script because I felt that a user's Dock is a personal item. Ev
 - Displays a checkbox dialog with available Software Updates to be installed.
 - Provides feedback on installations as they run with a moving progress bar.
 
-<br>
-#### **repair_permissions.sh**<br>
-- Requires the current beta release of cocoaDialog to be installed on the target Mac.
-- Optionally displays a 'preamble' message to the user before running the disk permissions repair.
-- Optionally allows the user to 'opt out' of future preamble messages with a checkbox.
-- When disk permissions repair is run, accurate progress is displayed with a cocoaDialog progress bar.
-- At the completion of the disk permissions repair, a final textbox style dialog appears with the repair results.
-- If any repair problems are detected, it brings this to the attention of the user in the textbox dialog heading.
-- If the option is enabled within the script with a variable, and problems are detected, an email can be sent to an admin or group email address with details on the Mac that ran the policy, plus the results of the repair. Note that this function uses the standard Unix mail function. This may not always work in all environments depending on firewall restrictions.
-
-Please read the notes contained within the script for instructions on how to use the various options, and be sure to add a valid email address to it before deploying.  
-Currently this script does not use Casper Suite script parameters. If I receive enough feedback on wanting this functionality, I will add it in. In the interim, feel free to modify the script to use passed parameters for some of the options.  
 
 <br>
 #### **download_jss_scripts.sh**<br>
@@ -234,3 +172,72 @@ Or
 
 #### **install_Latest_AdobeReader.sh**   (_New_)<br>
 (This script has been replaced by Update_Core_Apps.sh)
+
+
+#### **Update_Core_Apps.sh**<br>
+**IMPORTANT: This script has been depreciated and is no longer being maintained. Most of it will not work on current versions of macOS or is no longer relevant. Use at your own risk!**
+The Update_Core_Apps script can be used to update many common free applications and Plug-ins. Despite the word "Update" in its name, it can also be used to install most of these applications and Plug-ins new on a target Mac.
+
+Details on the script are as follows:
+- Requires the current beta release of cocoaDialog to be installed on the target Mac if using Self Service mode (see below)
+- Can update any of the following applications and plug-ins:
+  * **Adobe Reader**
+  * **Adobe Flash Player**
+  * **Cyberduck**
+  * **Dropbox**
+  * **Firefox**
+  * **Firefox ESR**
+  * **Flip Player** (free version)
+  * **Microsoft Lync** (updates only)
+  * **Microsoft Office 2011** (updates only)
+  * **Oracle Java**
+  * **Silverlight**
+  * **VLC**  
+  
+- Can be used in a "silent" mode to update apps/Plug-ins silently on a target Mac, or "Self Service" mode to prompt an end user to install an update and show them both download and install progress, new version information, and success or failure notifications.
+- Has built in version checking against installed applications (if its installed), by comparing it to the latest release from the vendor. The version checking can handle odd version naming conventions, so that it ensures it is only "upgrading" a client, not downgrading it.
+- Office 2011 updates utilize a noquit.xml file to suppress the built in quit apps function of these updates. This allows these updates to install either silently, or via Self Service, without forcing the client to shut down the open applications. In both silent and Self Service modes, a dialog will alert the client of any applications that were open that should be quit and relaunched after installation.
+- The script accepts two Parameters passed to it from a Casper Suite policy:
+  * Parameter 4 ($4) is mandatory, and accepts a number of different strings for the app or Plug-in to check for updates. (For a full listing of acceptable strings, see how to display the help page for the script below).
+  * Parameter 5 ($5) is optional, and can accept any string to enable Self Service mode.
+  * Strings are case insensitive.
+- The script replaces both the **installLatestFlashPlayer-v1.sh** and **install_Latest_AdobeReader.sh** scripts.
+
+##### Basic usage  
+1. To test the script from Terminal on a Casper Suite managed Mac:  
+`sudo jamf runScript -script Update_Core_Apps.sh -path /path/to/script/ -p1 "app or plugin name"` _(mandatory)_ `-p2 "any string to enable Self Service"` _(optional)_  
+
+2. When adding the script to a Casper Suite policy, add a string to Parameter 4 and optionally Paramater 5.
+
+##### To show a help page for the script, in Terminal:  
+`/path/to/script/Update_Core_Apps.sh`  
+<br>
+
+
+#### **install_Latest_GoogleChrome-SelfService.sh**<br>
+**IMPORTANT: This script has been depreciated and is no longer being maintained. Most of it will not work on current versions of macOS or is no longer relevant. Use at your own risk!**
+This script is intended to be used within Self Service. The script will operate in one of three ways, dynamically determined based on conditions.  
+- If the Google Chrome browser is already installed on the Mac in the standard `/Applications/` path, it will attempt to locate the Google Software Update mechanism and run it as the user to check for, and install, any updates to Chrome. A final dialog will display if the browser was updated, or if it was already up to date.  
+- If it cannot locate the Google Software Update tools on the Mac, it will offer to download the latest release and install it.  
+- If Google Chrome is not installed or not located in `/Applications/`, it will offer to download the latest release and install it.  
+
+Progress is shown when appropriate. In all cases, the final success dialogs will display the installed or updated version of Google Chrome to the user running the policy.  
+
+Requirements:
+- Current beta release of cocoaDialog to be installed on the target Mac  
+<br>
+
+
+<br>
+#### **repair_permissions.sh**<br>
+**IMPORTANT: This script has been depreciated and is no longer being maintained. Most of it will not work on current versions of macOS or is no longer relevant. Use at your own risk!**
+- Requires the current beta release of cocoaDialog to be installed on the target Mac.
+- Optionally displays a 'preamble' message to the user before running the disk permissions repair.
+- Optionally allows the user to 'opt out' of future preamble messages with a checkbox.
+- When disk permissions repair is run, accurate progress is displayed with a cocoaDialog progress bar.
+- At the completion of the disk permissions repair, a final textbox style dialog appears with the repair results.
+- If any repair problems are detected, it brings this to the attention of the user in the textbox dialog heading.
+- If the option is enabled within the script with a variable, and problems are detected, an email can be sent to an admin or group email address with details on the Mac that ran the policy, plus the results of the repair. Note that this function uses the standard Unix mail function. This may not always work in all environments depending on firewall restrictions.
+
+Please read the notes contained within the script for instructions on how to use the various options, and be sure to add a valid email address to it before deploying.  
+Currently this script does not use Casper Suite script parameters. If I receive enough feedback on wanting this functionality, I will add it in. In the interim, feel free to modify the script to use passed parameters for some of the options.  
