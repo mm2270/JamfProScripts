@@ -143,7 +143,8 @@ Paramater 7 is an optional item that can be passed to the script which will use 
 I developed this script because I felt that a user's Dock is a personal item. Everyone manages their Dock differently. I didn't feel comfortable with forcing an icon to a user's Dock without giving them to the option to bypass it. However, we did want to give clients the ability to automatically add the newly installed application to their Dock if they wanted it. The Casper Suite doesn't have built in functionality to prompt the user for a choice for Dock icons unless its run as a separate policy along with User Interaction options set up.
 
 <br>  
-#### **selectable-SoftwareUpdate.sh**<br>  
+
+#### **selectable-SoftwareUpdate.sh**<br>
 
 - Requires the current beta release of cocoaDialog to be installed on the target Mac.  
 - Displays a checkbox dialog with available Software Updates to be installed.  
@@ -151,7 +152,9 @@ I developed this script because I felt that a user's Dock is a personal item. Ev
 
 
 <br>
-#### **download_jss_scripts.sh**<br>  
+
+
+#### **download_jss_scripts.sh**<br>
 This script, which is designed to be used with a Casper Suite JSS version 9.x, can be used to download all scripts located on the JSS into a directory. Each script is downloaded with the display name as shown for it in the JSS. The script contents are cleaned after saving, to remove any web formatted characters which would prevent the script from being usable.
 
 ##### Basic usage:  
