@@ -175,7 +175,7 @@ Or
 
 
 #### **Update_Core_Apps.sh**<br>
-**IMPORTANT: This script has been depreciated and is no longer being maintained. Most of it will not work on current versions of macOS or is no longer relevant. Use at your own risk!**
+**IMPORTANT: This script has been depreciated and is no longer being maintained. Most of it will not work on current versions of macOS or is no longer relevant. Use at your own risk!**<br>
 The Update_Core_Apps script can be used to update many common free applications and Plug-ins. Despite the word "Update" in its name, it can also be used to install most of these applications and Plug-ins new on a target Mac.
 
 Details on the script are as follows:
@@ -215,7 +215,7 @@ Details on the script are as follows:
 
 
 #### **install_Latest_GoogleChrome-SelfService.sh**<br>
-**IMPORTANT: This script has been depreciated and is no longer being maintained. Most of it will not work on current versions of macOS or is no longer relevant. Use at your own risk!**
+**IMPORTANT: This script has been depreciated and is no longer being maintained. Most of it will not work on current versions of macOS or is no longer relevant. Use at your own risk!**<br>
 This script is intended to be used within Self Service. The script will operate in one of three ways, dynamically determined based on conditions.  
 - If the Google Chrome browser is already installed on the Mac in the standard `/Applications/` path, it will attempt to locate the Google Software Update mechanism and run it as the user to check for, and install, any updates to Chrome. A final dialog will display if the browser was updated, or if it was already up to date.  
 - If it cannot locate the Google Software Update tools on the Mac, it will offer to download the latest release and install it.  
@@ -230,7 +230,7 @@ Requirements:
 
 <br>
 #### **repair_permissions.sh**<br>
-**IMPORTANT: This script has been depreciated and is no longer being maintained. Most of it will not work on current versions of macOS or is no longer relevant. Use at your own risk!**
+**IMPORTANT: This script has been depreciated and is no longer being maintained. Most of it will not work on current versions of macOS or is no longer relevant. Use at your own risk!**<br>
 - Requires the current beta release of cocoaDialog to be installed on the target Mac.
 - Optionally displays a 'preamble' message to the user before running the disk permissions repair.
 - Optionally allows the user to 'opt out' of future preamble messages with a checkbox.
