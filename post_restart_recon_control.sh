@@ -43,7 +43,7 @@
 ## Set a value for your organization name. Keep this short, like an acronym if possible.
 ## No special characters as they might cause a problem with the final xml file.
 ## Lowercase text works best but is not a requirement.
-yourOrg="wei"
+yourOrg="acme"
 
 
 ## The value below determines how many connection attempts to the Mac's Jamf Pro server the script should make before finally giving up.
@@ -52,7 +52,7 @@ yourOrg="wei"
 ## Please keep in mind to put in a reasonable value, so the LaunchDaemon is not retrying to connect endlessly, eating up resources.
 ## Likewise, be cautious not to set this too low. Since the script is called by a LaunchDaemon, it will fire up right after the Mac starts up. If the Mac doesn't connect to an
 ## internet connection until after it gets to the Desktop (ex: Wi-Fi), setting this too low may cause the recon to never occur.
-maxAttempts="60"
+maxAttempts="30"
 
 
 ####################################################################################################################################################################################
