@@ -8,6 +8,9 @@
 ##	Included 'Reboot Now' button, when a reboot is required after installed updates,
 ##	which waits 4 seconds, then does an immediate reboot when clicked.
 
+##      Set Internal Field Separator to % to fix updates since 10.13.2
+IFS='%'
+
 ##	Path to cocoaDialog (customize to your own location)
 cdPath="/Library/Application Support/JAMF/bin/cocoaDialog.app/Contents/MacOS/cocoaDialog"
 
